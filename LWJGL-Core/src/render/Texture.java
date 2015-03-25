@@ -11,6 +11,10 @@ public class Texture {
 	double dt;
 	public int x, y;
 	public int[] sequenceX;
+	
+	public Texture(String filePath){
+		this(new TexFile(filePath));
+	}
 
 	public Texture(TexFile file){
 		this(file, 0, 0);

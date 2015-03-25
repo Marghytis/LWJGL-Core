@@ -24,11 +24,10 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import util.PNGDecoder;
-import util.Time;
 
 public class Window {
 
-	public static int WIDTH, HEIGHT;
+	public static int WIDTH, HEIGHT, WIDTH_HALF, HEIGHT_HALF;
 	private static ByteBuffer icon16 = loadTexture("icons/icon16.png"), icon32 = loadTexture("icons/icon32.png"), icon64 = loadTexture("icons/icon64.png");
 	public static boolean closeRequested;
 	
@@ -82,7 +81,13 @@ public class Window {
 		}
 		WIDTH = canvas.getWidth();
 		HEIGHT = canvas.getHeight();
+		updateHalfs();
 		create(canvas);
+	}
+	
+	static void updateHalfs(){
+		WIDTH_HALF = WIDTH/2;
+		HEIGHT_HALF = HEIGHT/2;
 	}
 	
 	public static void createFullScreen(String name){
@@ -102,6 +107,7 @@ public class Window {
 		}
 		WIDTH = Display.getWidth();
 		HEIGHT = Display.getHeight();
+		updateHalfs();
 
 		create();
 	}
@@ -149,6 +155,7 @@ public class Window {
 	public static void setSize(int w, int h){
 		WIDTH = w;
 		HEIGHT = h;
+		updateHalfs();
 		try {
 			Display.setDisplayMode(new DisplayMode(w, h));
 		} catch (LWJGLException e) {
