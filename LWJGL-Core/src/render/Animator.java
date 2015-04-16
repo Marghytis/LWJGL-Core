@@ -69,6 +69,7 @@ public class Animator{
 			this.pos = 0;
 			this.x = ani.sequenceX == null ? ani.x : ani.sequenceX[0];
 			this.y = ani.y;
+			this.endTask = null;
 		}
 	}
 	

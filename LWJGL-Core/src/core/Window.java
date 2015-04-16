@@ -113,7 +113,7 @@ public class Window {
 	}
 	
 	private static void create(){
-		Display.setIcon(new ByteBuffer[] {icon16, icon32, icon64});
+		if(icon16 != null)Display.setIcon(new ByteBuffer[] {icon16, icon32, icon64});
 		try{
 			Display.create();
 			Mouse.create();
