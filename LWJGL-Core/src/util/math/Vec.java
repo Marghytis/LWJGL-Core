@@ -51,6 +51,9 @@ public class Vec {
 	public Vec shift(Vec d){
 		return shift(d.x, d.y);
 	}
+	public Vec shift(double dx, double dy, double scale){
+		return shift(dx*scale, dy*scale);
+	}
 	public Vec shift(double dx, double dy){
 		x += dx;
 		y += dy;
@@ -71,12 +74,18 @@ public class Vec {
 	public Vec invert(){
 		return scale(-1);
 	}
+	public static double[] factors = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+	public Vec round(int numbers){
+		x = Math.round(x*factors[numbers])/factors[numbers];
+		y = Math.round(y*factors[numbers])/factors[numbers];
+		return this;
+	}
 	public Vec setLength(double length){
 		return scale(length/length());
 	}
 	public Vec intify(){
-		x = (int)x;
-		y = (int)y;
+		x = Math.round(x);
+		y = Math.round(y);
 		return this;
 	}
 //OTHER
@@ -162,6 +171,18 @@ public class Vec {
 	}
 	
 	public String toString(){
+		return "Vec[ " + (float)x + " | " + (float)y + " ]";
+	}
+	
+	public String toStringExact(){
 		return "Vec[ " + x + " | " + y + " ]";
+	}
+	
+	public static Vec parseVec(String string){
+		if(string.equals("null")) return null;
+		String[] parts = string.split(" | ");
+		parts[0].replace("Vec[ ", "");
+		parts[1].replace(" ]", "");
+		return new Vec(Double.parseDouble(parts[0].substring(0, parts[0].length()-1)), Double.parseDouble(parts[1].substring(0, parts[1].length()-1)));
 	}
 }

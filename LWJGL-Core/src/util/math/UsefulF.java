@@ -4,12 +4,19 @@ package util.math;
 
 public class UsefulF {
 	
-	public static double[] sin = new double[100], cos = new double[100];
+	public static double[] sin100 = new double[100], sin30 = new double[30], cos100 = new double[100], cos30 = new double[30];
 	static {
 		double step = Math.PI/50;
 		for(double angle = 0, i = 0; i < 100; angle += step, i++){
-			sin[(int)i] = Math.sin(angle);
-			cos[(int)i] = Math.cos(angle);
+			sin100[(int)i] = Math.sin(angle);
+			cos100[(int)i] = Math.cos(angle);
+		}
+	}
+	static {
+		double step = Math.PI/15;
+		for(double angle = 0, i = 0; i < 30; angle += step, i++){
+			sin30[(int)i] = Math.sin(angle);
+			cos30[(int)i] = Math.cos(angle);
 		}
 	}
 	public static Function cubicUnit = (x) -> 3*x*x - (2*x*x*x);
@@ -40,6 +47,20 @@ public class UsefulF {
 	
 	public static double distSquare(double dx, double dy){
 		return dx*dx + dy*dy;
+	}
+	
+	final double threehalfs = 1.5;
+	public static double fastSqrt(double number){
+		
+		
+		long i;
+		double x2, y;
+		
+		x2 = number*0.5;
+		y = number;
+		i = Double.doubleToLongBits(number);
+		i = 0x5f3759df - (i >> 1);
+		return (i/2.0 + x2/i);
 	}
 	
 	public static int abs(int i){

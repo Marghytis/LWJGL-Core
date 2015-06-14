@@ -563,14 +563,14 @@ public class TrueTypeFont2 {
 	 * @param color
 	 *            The color to draw the text
 	 */
-	public void drawString(float x, float y, String whatchars, util.Color color) {
-		drawString(x,y,whatchars,color,0,whatchars.length()-1);
+	public void drawString(float x, float y, String whatchars, util.Color color, double scale) {
+		drawString(x,y,whatchars,color,0,whatchars.length()-1, scale);
 	}
 	
 	/**
 	 * @see Font#drawString(float, float, String, org.newdawn.slick.Color, int, int)
 	 */
-	public void drawString(float x, float y, String whatchars, util.Color color, int startIndex, int endIndex) {
+	public void drawString(float x, float y, String whatchars, util.Color color, int startIndex, int endIndex, double scale) {
 		
 		color.bind();
 		fontTexture.file.bind();
@@ -580,8 +580,9 @@ public class TrueTypeFont2 {
 
 		GL11.glBegin(GL11.GL_QUADS);
 
-		int totalwidth = 0;
+		float totalwidth = 0;
 		for (int i = 0; i < whatchars.length(); i++) {
+			//determine char
 			charCurrent = whatchars.charAt(i);
 			if (charCurrent < 256) {
 				intObject = charArray[charCurrent];
@@ -589,15 +590,20 @@ public class TrueTypeFont2 {
 				intObject = (IntObject)customChars.get( new Character( (char) charCurrent ) );
 			} 
 			
+			//draw char
 			if( intObject != null ) {
 				if ((i >= startIndex) || (i <= endIndex)) {
-					drawQuad((x + totalwidth), y,
-							(x + totalwidth + intObject.width),
-							(y + intObject.height), intObject.storedX,
-							intObject.storedY, intObject.storedX + intObject.width,
+					drawQuad(
+							x + totalwidth,
+							y,
+							x + totalwidth + (float)(intObject.width*scale),
+							y + (float)(intObject.height*scale),
+							intObject.storedX,
+							intObject.storedY,
+							intObject.storedX + intObject.width,
 							intObject.storedY + intObject.height);
 				}
-				totalwidth += intObject.width;
+				totalwidth += intObject.width*scale;
 			}
 		}
 
@@ -615,7 +621,7 @@ public class TrueTypeFont2 {
 	 *            The string to draw
 	 */
 	public void drawString(float x, float y, String whatchars) {
-		drawString(x, y, whatchars, util.Color.WHITE);
+		drawString(x, y, whatchars, util.Color.WHITE, 1);
 	}
 
 }

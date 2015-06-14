@@ -140,14 +140,14 @@ public class Texture {
 		}
 		
 		int angle = (int)(grad*100/360);
-		c[0] = (int)((pixelCoords[0]*UsefulF.cos[angle]) - (pixelCoords[1]*UsefulF.sin[angle]));
-		c[1] = (int)((pixelCoords[0]*UsefulF.sin[angle]) + (pixelCoords[1]*UsefulF.cos[angle]));
-		c[2] = (int)((pixelCoords[2]*UsefulF.cos[angle]) - (pixelCoords[1]*UsefulF.sin[angle]));
-		c[3] = (int)((pixelCoords[2]*UsefulF.sin[angle]) + (pixelCoords[1]*UsefulF.cos[angle]));
-		c[4] = (int)((pixelCoords[2]*UsefulF.cos[angle]) - (pixelCoords[3]*UsefulF.sin[angle]));
-		c[5] = (int)((pixelCoords[2]*UsefulF.sin[angle]) + (pixelCoords[3]*UsefulF.cos[angle]));
-		c[6] = (int)((pixelCoords[0]*UsefulF.cos[angle]) - (pixelCoords[3]*UsefulF.sin[angle]));
-		c[7] = (int)((pixelCoords[0]*UsefulF.sin[angle]) + (pixelCoords[3]*UsefulF.cos[angle]));
+		c[0] = (int)((pixelCoords[0]*UsefulF.cos100[angle]) - (pixelCoords[1]*UsefulF.sin100[angle]));
+		c[1] = (int)((pixelCoords[0]*UsefulF.sin100[angle]) + (pixelCoords[1]*UsefulF.cos100[angle]));
+		c[2] = (int)((pixelCoords[2]*UsefulF.cos100[angle]) - (pixelCoords[1]*UsefulF.sin100[angle]));
+		c[3] = (int)((pixelCoords[2]*UsefulF.sin100[angle]) + (pixelCoords[1]*UsefulF.cos100[angle]));
+		c[4] = (int)((pixelCoords[2]*UsefulF.cos100[angle]) - (pixelCoords[3]*UsefulF.sin100[angle]));
+		c[5] = (int)((pixelCoords[2]*UsefulF.sin100[angle]) + (pixelCoords[3]*UsefulF.cos100[angle]));
+		c[6] = (int)((pixelCoords[0]*UsefulF.cos100[angle]) - (pixelCoords[3]*UsefulF.sin100[angle]));
+		c[7] = (int)((pixelCoords[0]*UsefulF.sin100[angle]) + (pixelCoords[3]*UsefulF.cos100[angle]));
 	}
 	public void bashMod(boolean mirrored){
 		if(!fresh){

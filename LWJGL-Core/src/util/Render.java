@@ -58,7 +58,7 @@ public class Render {
 	public static void circle(double xS, double yS, double r){
 		GL11.glBegin(GL11.GL_POLYGON);
 			for(int angle = 0; angle < 100; angle++){
-				GL11.glVertex2d(r*UsefulF.cos[angle] + xS, r*UsefulF.sin[angle] + yS);
+				GL11.glVertex2d(r*UsefulF.cos100[angle] + xS, r*UsefulF.sin100[angle] + yS);
 			}
 		GL11.glEnd();
 	}

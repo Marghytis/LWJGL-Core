@@ -8,6 +8,8 @@ import util.Time;
 import util.math.Vec;
 
 public class Core {
+
+	public static boolean clear = true;
 	
 	public Runnable doAfterTheRest;
 	
