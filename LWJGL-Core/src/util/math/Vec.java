@@ -127,15 +127,25 @@ public class Vec {
 	/**
 	 * Draws a little cross on the screen
 	 */
-	public void draw(){
+	public void drawPoint(){
 		int x = xInt();
 		int y = yInt();
-		GL11.glBegin(GL11.GL_LINE);
+		GL11.glBegin(GL11.GL_LINES);
 			GL11.glVertex2i(x,		y);
-			GL11.glVertex2i(x-1,	y);
-			GL11.glVertex2i(x,		y-1);
-			GL11.glVertex2i(x+1,	y);
-			GL11.glVertex2i(x,		y+1);
+			GL11.glVertex2i(x-5,	y);
+			GL11.glVertex2i(x,		y);
+			GL11.glVertex2i(x,		y-5);
+			GL11.glVertex2i(x,		y);
+			GL11.glVertex2i(x+5,	y);
+			GL11.glVertex2i(x,		y);
+			GL11.glVertex2i(x,		y+5);
+		GL11.glEnd();
+	}
+	
+	public void drawAt(Vec pos){
+		GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex2d(pos.x,		pos.y);
+			GL11.glVertex2d(pos.x + x,	pos.y + y);
 		GL11.glEnd();
 	}
 	

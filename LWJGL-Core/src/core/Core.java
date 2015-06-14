@@ -13,16 +13,16 @@ public class Core {
 		this(name, Color.BLACK);
 	}
 	public Core(String name, Color clearColor){
-		Window.createMaximized(name);
+		Window.createMaximized(name, true);
 		Renderer.clearColor.set(clearColor);;
 		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	}
 	public Core(String name, Vec windowSize){
-		Window.create(name, windowSize.xInt(), windowSize.yInt());
+		Window.create(name, windowSize.xInt(), windowSize.yInt(), true);
 	}
 	
 	public void coreLoop(){
-		
+		Time.update(0);
 		while(!(Display.isCloseRequested() || Window.closeRequested))
 		{
 //			Time.start(1);
@@ -36,13 +36,13 @@ public class Core {
 //			Time.start(3);
 			Renderer.render();//RENDER
 //			Time.update(3);
-
-//			Time.start(4);
-			Display.update();//Update screen
-//			Time.update(4);
 			
-//			Time.start(5);
+//			Time.start(4);
 			Display.sync(60);//wait for next round
+//			Time.update(4);
+
+//			Time.start(5);
+			Display.update();//Update screen
 //			Time.update(5);
 		}
 		Window.destroy();

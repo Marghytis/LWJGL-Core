@@ -14,6 +14,7 @@ public class Color {
 	public static final Color BLUE = new Color(0, 0, 1);
 	public static final Color YELLOW = new Color(1, 1, 0);
 	public static final Color BROWN = new Color(0.68f, 0.44f, 0.26f);
+	public static final Color INVISIBLE = new Color(0, 0, 0, 0);
 
 	public static float boundAlpha = 1, boundR = 1, boundG = 1, boundB = 1;
 	public float r, g, b, a;
@@ -67,42 +68,39 @@ public class Color {
 	}
 	
 	public void bind(float a){
-		if(boundAlpha != a || boundR != r || boundG != g || boundB != b){
-			GL11.glColor4f(r, g, b, a);	
-			boundAlpha = a;
-			boundR = r;
-			boundG = g;
-			boundB = b;
-		}
+		boundAlpha = this.a*a;
+		boundR = r;
+		boundG = g;
+		boundB = b;
+		GL11.glColor4f(r, g, b, boundAlpha);	
 	}
 	
 	public void bindKeepAlpha(){
-		if(boundR != r || boundG != g || boundB != b){
-			GL11.glColor4f(r, g, b, boundAlpha);	
-			boundR = r;
-			boundG = g;
-			boundB = b;
-		}
+		GL11.glColor4f(r, g, b, boundAlpha);	
+		boundR = r;
+		boundG = g;
+		boundB = b;
 	}
 	
 	public void bind(){
-		if(boundAlpha != a || boundR != r || boundG != g || boundB != b){
-			GL11.glColor4f(r, g, b, a);	
-			boundAlpha = a;
-			boundR = r;
-			boundG = g;
-			boundB = b;
-		}
+		GL11.glColor4f(r, g, b, a);	
+		boundAlpha = a;
+		boundR = r;
+		boundG = g;
+		boundB = b;
 	}
 	
 	public static void bind(float r, float g, float b, float a){
-		if(boundAlpha != a || boundR != r || boundG != g || boundB != b){
-			GL11.glColor4f(r, g, b, a);	
-			boundAlpha = a;
-			boundR = r;
-			boundG = g;
-			boundB = b;
-		}
+		GL11.glColor4f(r, g, b, a);	
+		boundAlpha = a;
+		boundR = r;
+		boundG = g;
+		boundB = b;
+	}
+	
+	public static void bindAlpha(float alpha){
+		bind(boundR, boundG, boundB, alpha);
+		boundAlpha = alpha;
 	}
 	
 	@Override

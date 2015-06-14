@@ -18,6 +18,8 @@ import javax.swing.JFrame;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
 //github.com/Marghytis/Sarah-s-Welt.git
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -30,8 +32,10 @@ public class Window {
 	public static int WIDTH, HEIGHT, WIDTH_HALF, HEIGHT_HALF;
 	private static ByteBuffer icon16 = loadTexture("icons/icon16.png"), icon32 = loadTexture("icons/icon32.png"), icon64 = loadTexture("icons/icon64.png");
 	public static boolean closeRequested;
+	public static boolean openAl;
 	
-	public static void create(String name, int width, int height){
+	public static void create(String name, int width, int height, boolean openAl){
+		Window.openAl = openAl;
 		
 		if(Display.isCreated()){
 			Display.destroy();
@@ -46,7 +50,8 @@ public class Window {
 	
 	public static JFrame frame;
 	
-	public static void createMaximized(String name){
+	public static void createMaximized(String name, boolean openAl){
+		Window.openAl = openAl;
 		frame = new JFrame(name);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter()
@@ -73,7 +78,7 @@ public class Window {
 		Window.createCanvas(canvas);
 	}
 	
-	public static void createCanvas(Canvas canvas){
+	private static void createCanvas(Canvas canvas){
 		if(Display.isCreated()){
 			Display.destroy();
 			Mouse.destroy();
@@ -90,7 +95,8 @@ public class Window {
 		HEIGHT_HALF = HEIGHT/2;
 	}
 	
-	public static void createFullScreen(String name){
+	public static void createFullScreen(String name, boolean openAl){
+		Window.openAl = openAl;
 		
 		if(Display.isCreated()){
 			Display.destroy();
@@ -119,6 +125,9 @@ public class Window {
 			Mouse.create();
 			Keyboard.create();
 			setupOpenGL();
+			if(openAl){
+				setupOpenAL();
+			}
 		} catch(LWJGLException e){
 			e.printStackTrace();
 		}
@@ -133,6 +142,9 @@ public class Window {
 			Mouse.create();
 			Keyboard.create();
 			setupOpenGL();
+			if(openAl){
+				setupOpenAL();
+			}
 		} catch(LWJGLException e){
 			e.printStackTrace();
 		}
@@ -152,6 +164,16 @@ public class Window {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
+	private static void setupOpenAL(){
+	    try {
+	    	AL.create(null, 15, 22050, true);
+	    } catch (LWJGLException le) {
+	    	le.printStackTrace();
+	      return;
+	    }
+	    AL10.alGetError();
+	}
+	
 	public static void setSize(int w, int h){
 		WIDTH = w;
 		HEIGHT = h;
@@ -167,6 +189,7 @@ public class Window {
 		Display.destroy();
 		Mouse.destroy();
 		Keyboard.destroy();
+		AL.destroy();
 	}
 	
 	public static void fill(int texture){

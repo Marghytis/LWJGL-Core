@@ -9,13 +9,17 @@ public class TexFileInfo {
 
 	public int[][][] info;
 	
+	/**
+	 * You have to do info[y][x] to get to your data!!!! not info[x][y]
+	 * @param fileName
+	 */
 	public TexFileInfo(String fileName){
 		List<int[][]> helper = new ArrayList<>();
 		try {
 			BufferedReader bf = new BufferedReader(new FileReader(fileName));
 			String line = bf.readLine();
 			while(line != null){
-				String[] texs = line.split("-");
+				String[] texs = line.split("~");
 				int[][] row = new int[texs.length][];
 				for(int x = 0; x < texs.length; x++){
 					String[] data = texs[x].split(",");

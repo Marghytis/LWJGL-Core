@@ -3,6 +3,9 @@ package util.math;
 
 
 public class UsefulF {
+	
+	public static Function cubicUnit = (x) -> 3*x*x - (2*x*x*x);
+	
 	public static int cycle(int i, int size){
 		int mod = i%size;
 		if(mod == 0 || i > 0){

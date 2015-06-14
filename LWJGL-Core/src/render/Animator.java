@@ -54,7 +54,7 @@ public class Animator{
 	}
 	
 	public void setAnimation(Texture ani, Runnable task){
-		if(!this.ani.equals(ani)){
+		if(this.ani != ani){
 			this.ani = ani;
 			this.pos = 0;
 			this.x = ani.sequenceX == null ? ani.x : ani.sequenceX[0];
@@ -64,7 +64,7 @@ public class Animator{
 	}
 	
 	public void setAnimation(Texture ani){
-		if(!this.ani.equals(ani)){
+		if(this.ani != ani){
 			this.ani = ani;
 			this.pos = 0;
 			this.x = ani.sequenceX == null ? ani.x : ani.sequenceX[0];

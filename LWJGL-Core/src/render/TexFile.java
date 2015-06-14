@@ -22,6 +22,7 @@ public class TexFile {
 	public int handle;
 	public Vec size = new Vec();
 	public Rect pixelBox = new Rect();
+	public String name;
 	
 	int xParts, yParts;
 	
@@ -49,6 +50,7 @@ public class TexFile {
 		create(readFile(name), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
 		manageParts(xParts, yParts, relOffsetX, relOffsetY);
 		allTexFiles.add(this);
+		this.name = name;
 	}
 	
 	public TexFile(String name, Vec size, ByteBuffer data, int format, int internalFormat, int dataType){
@@ -64,6 +66,7 @@ public class TexFile {
 		create(data, format, internalFormat, dataType);
 		manageParts(xParts, yParts, relOffsetX, relOffsetY);
 		allTexFiles.add(this);
+		this.name = name;
 	}
 	
 	public void manageParts(int xParts, int yParts, double relOffsetX, double relOffsetY){
@@ -93,6 +96,10 @@ public class TexFile {
 	
 	public static void bindNone(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+	}
+	
+	public static TexFile boundOne(){
+		return boundFile;
 	}
 	
 	public Texture tex(){
