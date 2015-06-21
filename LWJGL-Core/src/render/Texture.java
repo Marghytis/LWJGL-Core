@@ -8,7 +8,7 @@ import util.math.Rect;
 public class Texture {
 	
 	public TexFile file;
-	double dt;
+	public double dt;
 	public int x, y;
 	public int[] sequenceX;
 	
