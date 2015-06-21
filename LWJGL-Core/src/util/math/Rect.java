@@ -29,7 +29,8 @@ public class Rect {
 	}
 //SET
 	public Rect set(Rect r){
-		return set(r.pos.x(), r.pos.y(), r.size.x(), r.size.y());
+		if(r == null) return set(0, 0, 0, 0);
+		else return set(r.pos.x(), r.pos.y(), r.size.x(), r.size.y());
 	}
 	public Rect set(double x, double y, double width, double height){
 		pos.set(x, y);

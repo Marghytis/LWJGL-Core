@@ -136,7 +136,7 @@ public class Window {
 	public static void create(Canvas canvas){
 		if(icon16 != null)Display.setIcon(new ByteBuffer[] {icon16, icon32, icon64});
 		try{
-	        Display.setVSyncEnabled(true);
+//	        Display.setVSyncEnabled(true);
 			Display.setParent(canvas);
 			Display.create();
 			Mouse.create();

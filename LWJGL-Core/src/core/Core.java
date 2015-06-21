@@ -21,36 +21,30 @@ public class Core {
 		Window.create(name, windowSize.xInt(), windowSize.yInt(), true);
 	}
 	
-	double dt = 1/60.0;
+	double dt = 1000/60.0, lastTime, tickLength;
 	
 	public void coreLoop(){
-		Time.update(0);
+		Time.update(0);//this is used to get the time delta for moving objects
 		while(!(Display.isCloseRequested() || Window.closeRequested))
 		{
-			Time.start(1);
-			Listener.listen();//LISTEN
-			Time.update(1);
+
+			lastTime = System.currentTimeMillis();
 			
-			Time.start(2);
-			Updater.tick();//UPDATE
-			Time.update(2);
+			Listener.listen();//LISTEN INPUT
 			
-			Time.start(3);
-			Renderer.render();//RENDER
-			Time.update(3);
+			Updater.tick();//UPDATE GAME LOGIC
 			
-			Time.start(4);
-//			Display.sync();//wait for next round
+			Renderer.render();//RENDER SCENE
+			
 			try {
-				Thread.sleep(Math.max((int)((dt - Time.delta[0])*1000), 0));
+				Thread.sleep(Math.max((int)(dt - (System.currentTimeMillis() - lastTime)), 0));//wait until the cycle took enough time for 60 FPS
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			Time.update(4);
-
-			Time.start(5);
+			
+			Time.start(1);
 			Display.update();//Update screen
-			Time.update(5);
+			Time.update(1);
 		}
 		Window.destroy();
 		System.exit(0);
