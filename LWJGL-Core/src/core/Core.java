@@ -21,29 +21,36 @@ public class Core {
 		Window.create(name, windowSize.xInt(), windowSize.yInt(), true);
 	}
 	
+	double dt = 1/60.0;
+	
 	public void coreLoop(){
 		Time.update(0);
 		while(!(Display.isCloseRequested() || Window.closeRequested))
 		{
-//			Time.start(1);
+			Time.start(1);
 			Listener.listen();//LISTEN
-//			Time.update(1);
+			Time.update(1);
 			
-//			Time.start(2);
+			Time.start(2);
 			Updater.tick();//UPDATE
-//			Time.update(2);
+			Time.update(2);
 			
-//			Time.start(3);
+			Time.start(3);
 			Renderer.render();//RENDER
-//			Time.update(3);
+			Time.update(3);
 			
-//			Time.start(4);
-			Display.sync(60);//wait for next round
-//			Time.update(4);
+			Time.start(4);
+//			Display.sync();//wait for next round
+			try {
+				Thread.sleep(Math.max((int)((dt - Time.delta[0])*1000), 0));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			Time.update(4);
 
-//			Time.start(5);
+			Time.start(5);
 			Display.update();//Update screen
-//			Time.update(5);
+			Time.update(5);
 		}
 		Window.destroy();
 		System.exit(0);
