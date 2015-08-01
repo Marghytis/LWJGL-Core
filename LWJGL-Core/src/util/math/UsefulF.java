@@ -4,6 +4,14 @@ package util.math;
 
 public class UsefulF {
 	
+	public static double[] sin = new double[100], cos = new double[100];
+	static {
+		double step = Math.PI/50;
+		for(double angle = 0, i = 0; i < 100; angle += step, i++){
+			sin[(int)i] = Math.sin(angle);
+			cos[(int)i] = Math.cos(angle);
+		}
+	}
 	public static Function cubicUnit = (x) -> 3*x*x - (2*x*x*x);
 	
 	public static int cycle(int i, int size){
@@ -99,5 +107,9 @@ public class UsefulF {
 			}
 		}
 		return ausgabe;
+	}
+	
+	public static boolean contains(double x0, double y0, double x1, double y1, double x2, double y2){
+		return x0 <= x2 && x0 >= x1 && y0 <= y2 && y0 >= y1;
 	}
 }

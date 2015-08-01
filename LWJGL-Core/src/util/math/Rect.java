@@ -58,6 +58,13 @@ public class Rect {
 		size.set(width, height);
 		return this;
 	}
+	public Rect scaleSizeKeepCenter(double x, double y){
+		double width = size.x() * x;
+		double height = size.y() * y;
+		pos.shift((size.x() - width)/2, (size.y() - height)/2);
+		size.set(width, height);
+		return this;
+	}
 	public Rect intify(){
 		pos.intify();
 		size.intify();

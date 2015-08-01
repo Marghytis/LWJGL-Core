@@ -80,11 +80,23 @@ public class Vec {
 		return this;
 	}
 //OTHER
+	public Vec rotate(double angle){//(radians)
+		double sin = Math.sin(angle), cos = Math.cos(angle),
+				x2 = (x*cos) - (y*sin),
+				y2 = (x*sin) + (y*cos);
+		this.x = x2;
+		this.y = y2;
+		return this;
+		
+	}
 	public Vec ortho(boolean left){
 		return left ? new Vec(-y, x) : new Vec(y, -x);
 	}
 	public Vec minus(Vec v2){
 		return new Vec(x - v2.x, y - v2.y);
+	}
+	public Vec minus(double x, double y){
+		return new Vec(this.x - x, this.y - y);
 	}
 	public double cross(Vec p){
 		return x*p.y - y*p.x;

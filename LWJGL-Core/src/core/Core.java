@@ -22,6 +22,7 @@ public class Core {
 	}
 	
 	double dt = 1000/60.0, lastTime, tickLength;
+	public int sleepTime, noSleepCounter;
 	
 	public void coreLoop(){
 		Time.update(0);//this is used to get the time delta for moving objects
@@ -37,7 +38,13 @@ public class Core {
 			Renderer.render();//RENDER SCENE
 			
 			try {
-				Thread.sleep(Math.max((int)(dt - (System.currentTimeMillis() - lastTime)), 0));//wait until the cycle took enough time for 60 FPS
+				int sleepTime = (int)(dt - (System.currentTimeMillis() - lastTime));
+				if(sleepTime > 0){
+					Thread.sleep(sleepTime);//wait until the cycle took enough time for 60 FPS
+					noSleepCounter = 0;
+				} else {
+					noSleepCounter++;
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

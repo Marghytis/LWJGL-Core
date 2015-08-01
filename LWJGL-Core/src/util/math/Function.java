@@ -46,6 +46,20 @@ public interface Function {
 		double c = 2*a/(width*width);
 		return (x) -> c*x*x*x + b*x*x + a*x;
 	}
+	
+	/**
+	 * Creates the Function of the above derivative but sets its peak below the origin
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static Function quartic(double w, double h){
+		w /= 2;
+		double ws = w*w;
+		double a = h/(ws*ws);
+		double b = -2*h/ws;
+		return (x) -> a*x*x*x*x + (b*x*x) + h;
+	}
 
 	public double f(double x);
 }
