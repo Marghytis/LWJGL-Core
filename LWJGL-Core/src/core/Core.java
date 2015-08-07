@@ -9,6 +9,8 @@ import util.math.Vec;
 
 public class Core {
 	
+	public Runnable doAfterTheRest;
+	
 	public Core(String name){
 		this(name, Color.BLACK);
 	}
@@ -29,6 +31,8 @@ public class Core {
 		while(!(Display.isCloseRequested() || Window.closeRequested))
 		{
 
+			Time.start(1);
+			
 			lastTime = System.currentTimeMillis();
 			
 			Listener.listen();//LISTEN INPUT
@@ -36,6 +40,11 @@ public class Core {
 			Updater.tick();//UPDATE GAME LOGIC
 			
 			Renderer.render();//RENDER SCENE
+			
+			if(doAfterTheRest != null){
+				doAfterTheRest.run();
+				doAfterTheRest = null;
+			}
 			
 			try {
 				int sleepTime = (int)(dt - (System.currentTimeMillis() - lastTime));
@@ -49,8 +58,8 @@ public class Core {
 				e.printStackTrace();
 			}
 			
-			Time.start(1);
 			Display.update();//Update screen
+
 			Time.update(1);
 		}
 		Window.destroy();

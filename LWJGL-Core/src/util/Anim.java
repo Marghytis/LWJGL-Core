@@ -26,6 +26,8 @@ public class Anim {
 			if(time <= 0){
 				iA = -1;
 				time = 0;
+			} else if(iA > iM){
+				iA = iM;
 			}
 			
 			//if nothing has started yet check for the first part
@@ -58,6 +60,8 @@ public class Anim {
 				iA = iM;
 				parts[iM].clock = parts[iM].length;
 				time = duration;
+			} else if(iA < 0){
+				iA = 0;
 			}
 			
 			//check if the parts following parts[iA] should start

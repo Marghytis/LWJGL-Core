@@ -1,49 +1,101 @@
 package render;
 
-import org.lwjgl.opengl.GL11;
+public class Animator extends Texture {
 
-import util.math.Rect;
-
-public class Animator{
-
-	double deltaT;
+	public Animation ani;
+	public Texture tex;
 	public int pos;
-	private Texture ani;
-	public int x, y;
+	public double deltaT;
 	/**
 	 * Has to be set every time the Texture is used (if it's needed)
 	 */
 	public Runnable endTask;
+	public boolean instantSwitch;
 	
-	public Animator(Texture ani){
-		if(ani != null){
-			this.ani = ani;
-			this.x = ani.sequenceX == null ? ani.x : ani.sequenceX[0];
-			this.y = ani.y;
-		}
+	public Animator(Texture tex){
+		setTexture(tex, null);
+	}
+	
+	public Animator(Animation ani) {
+		setAnimation(ani, null);
 	}
 	
 	public void update(double delta){
-		if(ani.sequenceX == null){
+		if(instantSwitch){
 			executeTask();
 		} else {
-			deltaT += delta;
-			if(deltaT >= ani.dt){
-				
-				pos += (int)(deltaT/ani.dt);
-				deltaT %= ani.dt;
+			if(deltaT >= ani.frameTime){
 	
-				if(pos >= ani.sequenceX.length){
-					pos %= ani.sequenceX.length;
+				pos += (int)(deltaT/ani.frameTime);
+				deltaT %= ani.frameTime;
+				
+				if(pos >= ani.x1.length){
+					pos %= ani.x1.length;
 					executeTask();
 				}
-				if(ani.sequenceX != null){//max occur, when the endTask changes the animation!
-					this.x = ani.sequenceX[pos];
-				} else {
-					this.x = ani.x;
-				}
+				
+				this.texCoords[0] = ani.x1[pos];
+				this.texCoords[2] = texCoords[0] + ani.w;
+			}
+			deltaT += delta;
+		}
+	}
+	
+	public void setAnimation(Animation ani, Runnable endTask){
+		if(!ani.equals(this.ani)){
+			this.ani = ani;
+			this.tex = null;
+			this.endTask = endTask;
+			this.pos = 0;
+			
+			this.file = ani.atlas.file;
+			this.texCoords[0] = ani.x1[0];
+			this.texCoords[1] = ani.y1;
+			this.texCoords[2] = ani.x1[0] + ani.w;
+			this.texCoords[3] = ani.y2;
+			
+			this.w = ani.atlas.w;
+			this.h = ani.atlas.h;
+
+			this.pixelCoords[0] = ani.atlas.pixelCoords[0];
+			this.pixelCoords[1] = ani.atlas.pixelCoords[1];
+			this.pixelCoords[2] = ani.atlas.pixelCoords[2];
+			this.pixelCoords[3] = ani.atlas.pixelCoords[3];
+			
+			if(ani.frameTime == -1){
+				instantSwitch = true;
+			} else {
+				instantSwitch = false;
 			}
 		}
+	}
+	public void setAnimation(Animation ani){
+		setAnimation(ani, null);
+	}
+	
+	public void setTexture(Texture tex, Runnable endTask){
+		if(!tex.equals(this.tex)){
+			this.tex = tex;
+			this.ani = null;
+			this.endTask = endTask;
+			this.pos = 0;
+			
+			this.file = tex.file;
+			this.texCoords = tex.texCoords;
+			this.x1 = tex.x1;
+			this.y1 = tex.y1;
+			this.w = tex.w;
+			this.h = tex.h;
+			this.pixelCoords[0] = tex.pixelCoords[0];
+			this.pixelCoords[1] = tex.pixelCoords[1];
+			this.pixelCoords[2] = tex.pixelCoords[2];
+			this.pixelCoords[3] = tex.pixelCoords[3];
+			
+			this.instantSwitch = true;
+		}
+	}
+	public void setTexture(Texture tex){
+		setTexture(tex, null);
 	}
 	
 	public void executeTask(){
@@ -53,100 +105,8 @@ public class Animator{
 		}
 	}
 	
-	public void setAnimation(Texture ani, Runnable task){
-		if(this.ani != ani){
-			this.ani = ani;
-			this.pos = 0;
-			this.x = ani.sequenceX == null ? ani.x : ani.sequenceX[0];
-			this.y = ani.y;
-			this.endTask = task;
-		}
-	}
-	
-	public void setAnimation(Texture ani){
-		if(this.ani != ani){
-			this.ani = ani;
-			this.pos = 0;
-			this.x = ani.sequenceX == null ? ani.x : ani.sequenceX[0];
-			this.y = ani.y;
-			this.endTask = null;
-		}
-	}
-	
-	public Texture getAnimation(){
-		return ani;
-	}
-	
-	public void fill(Rect quad){
-		fill(quad, 0);
-	}
-
-	public void fill(Rect quad, int orientation){
-		fill(quad.pos.xInt(), quad.pos.yInt(), quad.size.xInt(), quad.size.yInt(), orientation);
-	}
-	
-	public void fill(int xB, int yB, int width, int height, int orientation){
-		ani.file.bind();
-		switch(orientation){
-		case 0://Normal
-			GL11.glBegin(GL11.GL_QUADS);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB, 				yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB + width,			yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB + width,			yB + height);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB, 				yB + height);
-			GL11.glEnd();
-			break;
-		case 1://Mirrored
-			GL11.glBegin(GL11.GL_QUADS);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB, 				yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB + width,			yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB + width,			yB + height);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB, 				yB + height);
-			GL11.glEnd();
-			break;
-		case 2://Flipped
-			GL11.glBegin(GL11.GL_QUADS);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y);							GL11.glVertex2d(xB, 				yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y);							GL11.glVertex2d(xB + width,			yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y + ani.file.sectorSize.y); 	GL11.glVertex2d(xB + width,			yB + height);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y + ani.file.sectorSize.y); 	GL11.glVertex2d(xB, 				yB + height);
-			GL11.glEnd();
-			break;
-		}
-		
-	}
-	
-	public void fillBash(Rect quad, double xT, double yT){
-		fillBash(quad, xT, yT, 0);
-	}
-
-	public void fillBash(Rect quad, double xT, double yT, int orientation){
-		fillBash(quad.pos.xInt(), quad.pos.yInt(), quad.size.xInt(), quad.size.yInt(), xT, yT, orientation);
-	}
-	
-	public void fillBash(int xB, int yB, int width, int height, double xT, double yT, int orientation){
-		xB += xT;
-		yB += yT;
-		switch(orientation){
-		case 0://Normal
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB, 				yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB + width,			yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB + width,			yB + height);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB, 				yB + height);
-			break;
-		case 1://Mirrored
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB, 				yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y + ani.file.sectorSize.y);	GL11.glVertex2d(xB + width,			yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB + width,			yB + height);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y); 							GL11.glVertex2d(xB, 				yB + height);
-			break;
-		case 2://Flipped
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y);							GL11.glVertex2d(xB, 				yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y);							GL11.glVertex2d(xB + width,			yB);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x + ani.file.sectorSize.x, 	ani.file.sectorPos[x][y].y + ani.file.sectorSize.y); 	GL11.glVertex2d(xB + width,			yB + height);
-				GL11.glTexCoord2d(ani.file.sectorPos[x][y].x, 							ani.file.sectorPos[x][y].y + ani.file.sectorSize.y); 	GL11.glVertex2d(xB, 				yB + height);
-			break;
-		}
-		
+	public void bindTex(){
+		if(tex != null) tex.file.bind();
+		else if(ani != null) ani.atlas.file.bind();
 	}
 }

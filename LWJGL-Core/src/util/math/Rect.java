@@ -24,6 +24,9 @@ public class Rect {
 	public Rect(Vec v1, Vec v2){
 		this(v1.x, v1.y, v2.x - v1.x, v2.y - v1.y);
 	}
+	public Rect(int[] coords){
+		this(coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1]);
+	}
 	public Rect copy(){
 		return new Rect(pos.x(), pos.y(), size.x(), size.y());
 	}
