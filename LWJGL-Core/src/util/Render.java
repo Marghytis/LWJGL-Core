@@ -2,6 +2,8 @@ package util;
 
 import org.lwjgl.opengl.GL11;
 
+import util.math.UsefulF;
+
 public class Render {
 
 	public static void quad(double x1, double y1, double x2, double y2){
@@ -50,6 +52,14 @@ public class Render {
 			GL11.glVertex2d(x2, y1);
 			GL11.glVertex2d(x2, y2);
 			GL11.glVertex2d(x1, y2);
+		GL11.glEnd();
+	}
+	
+	public static void circle(double xS, double yS, double r){
+		GL11.glBegin(GL11.GL_POLYGON);
+			for(int angle = 0; angle < 100; angle++){
+				GL11.glVertex2d(r*UsefulF.cos[angle] + xS, r*UsefulF.sin[angle] + yS);
+			}
 		GL11.glEnd();
 	}
 }

@@ -75,7 +75,11 @@ public class TexAtlas extends Texture {
 	 * @param y
 	 * @return
 	 */
+	public Animation sfA(String name, int x, int y){
+		return new Animation(name, this, -1, y, x);
+	}
+	
 	public Animation sfA(int x, int y){
-		return new Animation(this, -1, y, x);
+		return sfA("", x, y);
 	}
 }

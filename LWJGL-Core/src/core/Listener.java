@@ -38,6 +38,10 @@ public interface Listener {
 				for(Listener l : listeners){
 					if(l.keyPressed(Keyboard.getEventKey())) break;
 				}
+			} else {
+				for(Listener l : listeners){
+					if(l.keyReleased(Keyboard.getEventKey())) break;
+				}
 			}
 		}
 	}
@@ -49,4 +53,5 @@ public interface Listener {
 	public boolean pressed(int button, Vec mousePos);
 	public boolean released(int button, Vec mousePos, Vec pathSincePress);
 	public boolean keyPressed(int key);
+	public boolean keyReleased(int key);
 }

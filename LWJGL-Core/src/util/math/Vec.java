@@ -72,7 +72,7 @@ public class Vec {
 		return scale(-1);
 	}
 	public Vec setLength(double length){
-		return scale(length/Math.sqrt(((x*x)+(y*y))));
+		return scale(length/length());
 	}
 	public Vec intify(){
 		x = (int)x;

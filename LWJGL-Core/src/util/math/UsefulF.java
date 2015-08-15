@@ -23,6 +23,21 @@ public class UsefulF {
 		}
 	}
 	
+	public static boolean equalsApprox(double d1, double d2, double equality){
+		return (d2 - d1)/d1 <= equality; 
+	}
+	
+	/**
+	 * d2 has to be less than d1
+	 * @param d1
+	 * @param d2
+	 * @param equality
+	 * @return
+	 */
+	public static boolean equalOrLessApprox(double d1, double d2, double equality){
+		return abs((d2 - d1)/d1) <= equality || d2 < d1; 
+	}
+	
 	public static int abs(int i){
 		if(i >= 0){
 			return i;

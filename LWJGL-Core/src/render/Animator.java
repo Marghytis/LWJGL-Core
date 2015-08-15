@@ -31,6 +31,9 @@ public class Animator extends Texture {
 				
 				if(pos >= ani.x1.length){
 					pos %= ani.x1.length;
+				}
+				
+				if(pos >= ani.taskTime){
 					executeTask();
 				}
 				
@@ -42,11 +45,33 @@ public class Animator extends Texture {
 	}
 	
 	public void setAnimation(Animation ani, Runnable endTask){
-		if(!ani.equals(this.ani)){
+		if(ani != this.ani){
+			
+			lastTex = this.tex;
+			lastAni = this.ani;
+			lastTask = this.endTask;
+			
 			this.ani = ani;
 			this.tex = null;
 			this.endTask = endTask;
 			this.pos = 0;
+			
+			if(ani == null){
+				file = TexFile.emptyTex;
+				texCoords[0] = 0;
+				texCoords[1] = 0;
+				texCoords[2] = 0;
+				texCoords[3] = 0;
+				w = 0;
+				h = 0;
+				pixelCoords[0] = 0;
+				pixelCoords[1] = 0;
+				pixelCoords[2] = 0;
+				pixelCoords[3] = 0;
+				
+				instantSwitch = true;
+				return;
+			}
 			
 			this.file = ani.atlas.file;
 			this.texCoords[0] = ani.x1[0];
@@ -74,11 +99,33 @@ public class Animator extends Texture {
 	}
 	
 	public void setTexture(Texture tex, Runnable endTask){
-		if(!tex.equals(this.tex)){
+		if(tex != this.tex){
+			
+			lastTex = this.tex;
+			lastAni = this.ani;
+			lastTask = this.endTask;
+					
 			this.tex = tex;
 			this.ani = null;
 			this.endTask = endTask;
 			this.pos = 0;
+			
+			if(tex == null){
+				file = TexFile.emptyTex;
+				texCoords[0] = 0;
+				texCoords[1] = 0;
+				texCoords[2] = 0;
+				texCoords[3] = 0;
+				w = 0;
+				h = 0;
+				pixelCoords[0] = 0;
+				pixelCoords[1] = 0;
+				pixelCoords[2] = 0;
+				pixelCoords[3] = 0;
+				
+				instantSwitch = true;
+				return;
+			}
 			
 			this.file = tex.file;
 			this.texCoords = tex.texCoords;
@@ -97,6 +144,18 @@ public class Animator extends Texture {
 	public void setTexture(Texture tex){
 		setTexture(tex, null);
 	}
+	
+	public void setLast(){
+		if(lastTex != null){
+			setTexture(lastTex, lastTask);
+		} else {
+			setAnimation(lastAni, lastTask);
+		}
+	}
+	
+	public Texture lastTex;
+	public Animation lastAni;
+	public Runnable lastTask;
 	
 	public void executeTask(){
 		if(endTask != null){
