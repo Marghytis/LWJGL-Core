@@ -38,6 +38,10 @@ public class UsefulF {
 		return abs((d2 - d1)/d1) <= equality || d2 < d1; 
 	}
 	
+	public static double distSquare(double dx, double dy){
+		return dx*dx + dy*dy;
+	}
+	
 	public static int abs(int i){
 		if(i >= 0){
 			return i;
