@@ -109,7 +109,7 @@ public class Texture {
 		drawBash(mirrored, offsetX, offsetY);
 		GL11.glEnd();
 	}
-	static int[] c = new int[8]; boolean fresh;
+	static int[] c = new int[8]; public boolean fresh;
 	public void resetMod(){
 		c[0] = pixelCoords[0];
 		c[1] = pixelCoords[1];
@@ -194,5 +194,10 @@ public class Texture {
 	
 	public Rect createBox(){
 		return new Rect(pixelCoords);
+	}
+	public void debugPrintC(){
+		for(int i = 0; i < c.length; i++){
+			System.out.println(c[i]);
+		}
 	}
 }

@@ -131,6 +131,9 @@ public class Vec {
 	public boolean is0(){
 		return x == 0 && y == 0;
 	}
+	public double distTo(Vec v2){
+		return Math.sqrt(((v2.x - x)*(v2.x - x)) + ((v2.y - y)*(v2.y - y)));
+	}
 	public boolean containedBy(Rect rect){
 		return containedBy(rect.pos.x(), rect.pos.y(), rect.size.x(), rect.size.y());
 	}

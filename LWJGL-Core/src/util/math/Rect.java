@@ -35,6 +35,9 @@ public class Rect {
 		if(r == null) return set(0, 0, 0, 0);
 		else return set(r.pos.x(), r.pos.y(), r.size.x(), r.size.y());
 	}
+	public Rect set(int[] coords){
+		return set(coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1]);
+	}
 	public Rect set(double x, double y, double width, double height){
 		pos.set(x, y);
 		size.set(width, height);

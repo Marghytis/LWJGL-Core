@@ -31,7 +31,7 @@ public class UsefulF {
 	}
 	
 	public static boolean equalsApprox(double d1, double d2, double equality){
-		return (d2 - d1)/d1 <= equality; 
+		return abs((d2 - d1)/d1) <= equality; 
 	}
 	
 	/**
@@ -111,6 +111,21 @@ public class UsefulF {
 		}
 	}
 	
+	public static boolean intersectionLines2(Vec a1, Vec a12, Vec b1, Vec b2, Vec out){
+		Vec ab = b1.minus(a1);
+		double bSlope = (b2.y - b1.y)/(b2.x - b1.x);
+		
+		double k1 = (ab.y - (ab.x*bSlope))/(a12.y - (a12.x*bSlope));//Line a : x = a1 + k1*a12
+		if(k1 <= 1 && k1 >= 0){
+			double k2 = (k1*a12.x + a1.x - b1.x)/(b2.x - b1.x);
+			if(k2 <= 1 && k2 >= 0){
+				out.set(a1).shift(a12, k1);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * 
 	 * @param p1 The first point of the line
@@ -143,7 +158,12 @@ public class UsefulF {
 			double yP = ((a*xP)+b) + c.y;
 			xP += c.x;
 			if((p1.x <= xP && xP <= p2.x)||(p2.x <= xP && xP <= p1.x)){
-				ausgabe[0] = new Vec(xP, yP);
+				if(xP <= c.x){
+					ausgabe[0] = new Vec(xP, yP);
+				}
+				if(xP >= c.x){
+					ausgabe[1] = new Vec(xP, yP);
+				}
 			}
 		}
 		return ausgabe;
