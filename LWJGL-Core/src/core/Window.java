@@ -20,10 +20,12 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.opengl.ContextAttribs;
 //github.com/Marghytis/Sarah-s-Welt.git
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.PixelFormat;
 
 import util.PNGDecoder;
 
@@ -33,6 +35,8 @@ public class Window {
 	private static ByteBuffer icon16 = loadTexture("icons/icon16.png"), icon32 = loadTexture("icons/icon32.png"), icon64 = loadTexture("icons/icon64.png");
 	public static boolean closeRequested;
 	public static boolean openAl;
+	public static PixelFormat pixelFormat;
+	public static ContextAttribs contextAttribs;
 	
 	public static void create(String name, int width, int height, boolean openAl){
 		Window.openAl = openAl;
@@ -121,7 +125,11 @@ public class Window {
 	private static void create(){
 		if(icon16 != null)Display.setIcon(new ByteBuffer[] {icon16, icon32, icon64});
 		try{
-			Display.create();
+			if(pixelFormat != null && contextAttribs != null){
+				Display.create(pixelFormat, contextAttribs);
+			} else {
+				Display.create();
+			}
 			Mouse.create();
 			Keyboard.create();
 			setupOpenGL();
