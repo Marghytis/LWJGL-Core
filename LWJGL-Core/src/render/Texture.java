@@ -10,7 +10,7 @@ public class Texture {
 	public static TexAtlas empty = new TexAtlas(TexFile.emptyTex, 0, 0, 0, 0, 1, 1, 0, 0);
 
 	public TexFile file;
-	public double[] texCoords = new double[4];
+	public float[] texCoords = new float[4];
 	public int x1, y1, w, h;
 	public int[] pixelCoords = new int[4];
 	public TexInfo[] infos;
@@ -37,10 +37,10 @@ public class Texture {
 		this.h = h;
 		
 		if(file.width > 0){//this if question is only for the "empty"-Texture
-			this.texCoords[0] = (double)x1/file.width;
-			this.texCoords[1] = (double)y1/file.height;
-			this.texCoords[2] = (double)w/file.width + this.texCoords[0];
-			this.texCoords[3] = (double)h/file.height + this.texCoords[1];
+			this.texCoords[0] = (float)x1/file.width;
+			this.texCoords[1] = (float)y1/file.height;
+			this.texCoords[2] = (float)w/file.width + this.texCoords[0];
+			this.texCoords[3] = (float)h/file.height + this.texCoords[1];
 		}
 
 		this.pixelCoords[0] = (int)(offsetX*w);

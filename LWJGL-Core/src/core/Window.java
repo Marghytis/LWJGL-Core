@@ -146,7 +146,11 @@ public class Window {
 		try{
 //	        Display.setVSyncEnabled(true);
 			Display.setParent(canvas);
-			Display.create();
+			if(pixelFormat != null && contextAttribs != null){
+				Display.create(pixelFormat, contextAttribs);
+			} else {
+				Display.create();
+			}
 			Mouse.create();
 			Keyboard.create();
 			setupOpenGL();
@@ -160,11 +164,7 @@ public class Window {
 	
 	private static void setupOpenGL(){
 		//set the viewport
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, WIDTH, 0, HEIGHT, -1, 1);
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_LINE_STIPPLE);
         GL11.glEnable(GL11.GL_BLEND);

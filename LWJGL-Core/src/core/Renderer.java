@@ -15,7 +15,6 @@ public interface Renderer {
 	
 	public static void render(){
 		//reset OpenGL
-		GL11.glLoadIdentity();
 		if(Core.clear) GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		renderers.forEach((r) -> r.draw());
 	}

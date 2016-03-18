@@ -4,7 +4,7 @@ package render;
 public class TexAtlas extends Texture {
 
 	public int partsX, partsY;
-	public double partWidth, partHeight;
+	public float partWidth, partHeight;
 	public Texture[][] texs;
 	
 	public TexAtlas(TexFile file, int x1, int y1, int w, int h, int partsX, int partsY, double offsetX, double offsetY) {
@@ -12,8 +12,8 @@ public class TexAtlas extends Texture {
 		this.partsX = partsX;
 		this.partsY = partsY;
 		if(file.width > 0 && file.height > 0){//only for the "empty"-Texture
-			this.partWidth = (double)w/file.width;
-			this.partHeight = (double)h/file.height;
+			this.partWidth = (float)w/file.width;
+			this.partHeight = (float)h/file.height;
 		}
 		
 		this.texs = new Texture[partsX][partsY];
@@ -24,8 +24,8 @@ public class TexAtlas extends Texture {
 		
 		this.partsX = partsX;
 		this.partsY = partsY;
-		this.partWidth = 1.0/partsX;
-		this.partHeight = 1.0/partsY;
+		this.partWidth = 1.0f/partsX;
+		this.partHeight = 1.0f/partsY;
 
 		this.texCoords[0] = 0;
 		this.texCoords[1] = 0;
