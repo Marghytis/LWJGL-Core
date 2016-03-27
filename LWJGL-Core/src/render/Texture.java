@@ -1,5 +1,8 @@
 package render;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 
 import util.math.Rect;
@@ -7,13 +10,13 @@ import util.math.UsefulF;
 
 public class Texture {
 	
-	public static TexAtlas empty = new TexAtlas(TexFile.emptyTex, 0, 0, 0, 0, 1, 1, 0, 0);
-
+	static List<Texture> allTextures = new ArrayList<>();
+	public static Texture emptyTexture = new Texture(TexFile.emptyTex, 0, 0, 1, 1, 0, 0);
+	
 	public TexFile file;
-	public float[] texCoords = new float[4];
+	float[] texCoords = new float[4];
 	public int x1, y1, w, h;
 	public int[] pixelCoords = new int[4];
-	public TexInfo[] infos;
 	
 	public Texture(String path, double offsetX, double offsetY){
 		this.file = new TexFile(path);
@@ -25,6 +28,7 @@ public class Texture {
 		this.pixelCoords[1] = (int)(offsetY*file.height);
 		this.pixelCoords[2] = pixelCoords[0] + file.width;
 		this.pixelCoords[3] = pixelCoords[1] + file.height;
+		allTextures.add(this);
 	}
 
 	public Texture(TexFile file, int x1, int y1, int w, int h, double offsetX, double offsetY){
@@ -47,10 +51,12 @@ public class Texture {
 		this.pixelCoords[1] = (int)(offsetY*h);
 		this.pixelCoords[2] = pixelCoords[0] + w;
 		this.pixelCoords[3] = pixelCoords[1] + h;
+
+		allTextures.add(this);
 	}
 
 	/**
-	 * This is only for Animators. they initialize themselves
+	 * This is only for Animators. they initialize themselves EDIT: Or TexAtlases
 	 */
 	Texture(){}
 	
@@ -186,10 +192,6 @@ public class Texture {
 	}
 	public void fillBash(Rect rect, boolean mirrored, double offsetX, double offsetY){
 		fillBash(rect.pos.x + offsetX, rect.pos.y + offsetY, rect.pos.x + offsetX + rect.size.x, rect.pos.y + offsetY + rect.size.y, mirrored);
-	}
-	
-	public void addInfo(TexInfo... infos){
-		this.infos = infos;
 	}
 	
 	public Rect createBox(){

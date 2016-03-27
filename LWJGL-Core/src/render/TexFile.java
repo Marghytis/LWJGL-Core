@@ -1,6 +1,7 @@
 package render;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -19,11 +20,14 @@ public class TexFile {
 	public int width, height;
 	
 	//only use for the empty tex
-	private TexFile(){}
+	private TexFile(){
+		this.path = "/res/EmptyTex.png";
+		createGL(readInternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+	}
 	
 	public TexFile(String path){
 		this.path = path;
-		createGL(readFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		createGL(readExternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
 	}
 	
 	public TexFile(String name, int handle){
@@ -52,10 +56,22 @@ public class TexFile {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 	}
 	
-	private ByteBuffer readFile(String name){
+	public ByteBuffer readExternalFile(String path){
 		try {
-			// Open the PNG file as an InputStream
-			InputStream in = new FileInputStream(name);
+			return readFile(new FileInputStream(path));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ByteBuffer readInternalFile(String path){
+		return readFile(TexFile.class.getResourceAsStream(path));
+	}
+	
+	private ByteBuffer readFile(InputStream in){
+		// Open the PNG file as an InputStream
+		try {
 			// Link the PNG decoder to this stream
 			PNGDecoder decoder = new PNGDecoder(in);
 			
@@ -82,6 +98,7 @@ public class TexFile {
 	public void bind(){
 		if(!this.equals(boundFile)){
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
+			boundFile = this;
 		}
 	}
 	

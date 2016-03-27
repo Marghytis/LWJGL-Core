@@ -165,8 +165,6 @@ public class Window {
 	private static void setupOpenGL(){
 		//set the viewport
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_LINE_STIPPLE);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glCullFace(GL11.GL_FRONT_AND_BACK);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

@@ -2,6 +2,7 @@ package core;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 import util.Color;
 import util.Time;
@@ -66,5 +67,19 @@ public class Core {
 		}
 		Window.destroy();
 		System.exit(0);
+	}
+	
+	public static void checkGLErrors(boolean exit){
+		int errorValue;
+		boolean foundSomething = false;
+		 while ((errorValue = GL11.glGetError()) != GL11.GL_NO_ERROR) {
+	            String errorString = GLU.gluErrorString(errorValue);
+	            System.err.println("ERROR - " + "BLA" + ": " + errorString);
+	            foundSomething = true;
+        }
+		if(foundSomething && exit){
+			if (Display.isCreated()) Display.destroy();
+			System.exit(-1);
+		}
 	}
 }

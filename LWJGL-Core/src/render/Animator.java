@@ -1,6 +1,6 @@
 package render;
 
-public class Animator extends Texture {
+public class Animator {
 
 	public Animation ani;
 	public Texture tex;
@@ -12,12 +12,16 @@ public class Animator extends Texture {
 	public Runnable endTask;
 	public boolean instantSwitch;
 	
+	public Animator(){
+		setTexture(Texture.emptyTexture);
+	}
+	
 	public Animator(Texture tex){
-		setTexture(tex, null);
+		setTexture(tex);
 	}
 	
 	public Animator(Animation ani) {
-		setAnimation(ani, null);
+		setAnimation(ani);
 	}
 	
 	public void update(double delta){
@@ -29,16 +33,14 @@ public class Animator extends Texture {
 				pos += (int)(deltaT/ani.frameTime);
 				deltaT %= ani.frameTime;
 				
-				if(pos >= ani.x1.length){
-					pos %= ani.x1.length;
+				if(pos >= ani.indices.length){
+					pos %= ani.indices.length;
 				}
 				
 				if(pos >= ani.taskTime){
 					executeTask();
 				}
-				
-				this.texCoords[0] = ani.x1[pos];
-				this.texCoords[2] = texCoords[0] + ani.w;
+				this.tex = ani.atlas.texs[ani.indices[pos]];
 			}
 			deltaT += delta;
 		}
@@ -50,43 +52,11 @@ public class Animator extends Texture {
 			lastTex = this.tex;
 			lastAni = this.ani;
 			lastTask = this.endTask;
-			
-			this.ani = ani;
-			this.tex = null;
-			this.endTask = endTask;
 			this.pos = 0;
 			
-			if(ani == null){
-				file = TexFile.emptyTex;
-				texCoords[0] = 0;
-				texCoords[1] = 0;
-				texCoords[2] = 0;
-				texCoords[3] = 0;
-				w = 0;
-				h = 0;
-				pixelCoords[0] = 0;
-				pixelCoords[1] = 0;
-				pixelCoords[2] = 0;
-				pixelCoords[3] = 0;
-				
-				instantSwitch = true;
-				return;
-			}
-			
-			this.file = ani.atlas.file;
-			this.texCoords[0] = ani.x1[0];
-			this.texCoords[1] = ani.y1;
-			this.texCoords[2] = ani.x1[0] + ani.w;
-			this.texCoords[3] = ani.y2;
-			
-			this.w = ani.atlas.w;
-			this.h = ani.atlas.h;
-
-			this.pixelCoords[0] = ani.atlas.pixelCoords[0];
-			this.pixelCoords[1] = ani.atlas.pixelCoords[1];
-			this.pixelCoords[2] = ani.atlas.pixelCoords[2];
-			this.pixelCoords[3] = ani.atlas.pixelCoords[3];
-			
+			this.ani = ani;
+			this.tex = ani.atlas.texs[ani.indices[pos]];
+			this.endTask = endTask;
 			if(ani.frameTime == -1){
 				instantSwitch = true;
 			} else {
@@ -105,38 +75,10 @@ public class Animator extends Texture {
 			lastAni = this.ani;
 			lastTask = this.endTask;
 					
-			this.tex = tex;
 			this.ani = null;
+			this.tex = tex;
 			this.endTask = endTask;
 			this.pos = 0;
-			
-			if(tex == null){
-				file = TexFile.emptyTex;
-				texCoords[0] = 0;
-				texCoords[1] = 0;
-				texCoords[2] = 0;
-				texCoords[3] = 0;
-				w = 0;
-				h = 0;
-				pixelCoords[0] = 0;
-				pixelCoords[1] = 0;
-				pixelCoords[2] = 0;
-				pixelCoords[3] = 0;
-				
-				instantSwitch = true;
-				return;
-			}
-			
-			this.file = tex.file;
-			this.texCoords = tex.texCoords;
-			this.x1 = tex.x1;
-			this.y1 = tex.y1;
-			this.w = tex.w;
-			this.h = tex.h;
-			this.pixelCoords[0] = tex.pixelCoords[0];
-			this.pixelCoords[1] = tex.pixelCoords[1];
-			this.pixelCoords[2] = tex.pixelCoords[2];
-			this.pixelCoords[3] = tex.pixelCoords[3];
 			
 			this.instantSwitch = true;
 		}
@@ -146,10 +88,10 @@ public class Animator extends Texture {
 	}
 	
 	public void setLast(){
-		if(lastTex != null){
-			setTexture(lastTex, lastTask);
-		} else {
+		if(lastAni != null){
 			setAnimation(lastAni, lastTask);
+		} else {
+			setTexture(lastTex, lastTask);
 		}
 	}
 	
