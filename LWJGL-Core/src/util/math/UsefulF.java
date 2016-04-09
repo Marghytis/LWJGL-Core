@@ -52,6 +52,10 @@ public class UsefulF {
 		return dx*dx + dy*dy;
 	}
 	
+	public static int modTo(int value, int base){
+		return value - Math.floorDiv(value, base)*base;
+	}
+	
 	final double threehalfs = 1.5;
 	public static double fastSqrt(double number){
 		

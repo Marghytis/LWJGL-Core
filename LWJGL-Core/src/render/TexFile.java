@@ -12,22 +12,24 @@ import util.PNGDecoder;
 
 public class TexFile {
 
-	public static TexFile emptyTex = new TexFile();
+	public static TexFile emptyTex = new TexFile("/res/EmptyTex.png", true);
 	static TexFile boundFile = emptyTex;
 
 	public String path;
 	public int handle;
 	public int width, height;
 	
-	//only use for the empty tex
-	private TexFile(){
-		this.path = "/res/EmptyTex.png";
-		createGL(readInternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+	public TexFile(String path, boolean internal){
+		this.path = path;
+		if(internal){
+			createGL(readInternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		} else {
+			createGL(readExternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		}
 	}
 	
 	public TexFile(String path){
-		this.path = path;
-		createGL(readExternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		this(path, false);
 	}
 	
 	public TexFile(String name, int handle){
@@ -104,6 +106,7 @@ public class TexFile {
 	
 	public static void bindNone(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		boundFile = null;
 	}
 	
 	public static TexFile boundOne(){

@@ -14,9 +14,10 @@ public class Texture {
 	public static Texture emptyTexture = new Texture(TexFile.emptyTex, 0, 0, 1, 1, 0, 0);
 	
 	public TexFile file;
-	float[] texCoords = new float[4];
+	public float[] texCoords = new float[4];
 	public int x1, y1, w, h;
 	public int[] pixelCoords = new int[4];
+	public int[][] info;
 	
 	public Texture(String path, double offsetX, double offsetY){
 		this.file = new TexFile(path);

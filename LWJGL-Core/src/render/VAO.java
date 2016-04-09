@@ -28,11 +28,11 @@ public class VAO {
 		for(int i = 0; i < numberOfAttribs; i++){
 			GL20.glEnableVertexAttribArray(i);
 		}
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indices.handle);
+		if(indices != null) GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indices.handle);
 	}
 	
 	public void unbindStuff(){
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+		if(indices != null) GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		for(int i = numberOfAttribs-1; i >= 0; i--){
 			GL20.glDisableVertexAttribArray(i);
 		}

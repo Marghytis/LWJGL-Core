@@ -6,6 +6,10 @@ public class Queue<T> {
 	public Node leftEnd, rightEnd;
 	public int length;
 	
+	/**
+	 * Enqueue the T right
+	 * @param data
+	 */
 	public void enqueue(T data){
 		length++;
 		Node newNode = new Node(data);
@@ -18,6 +22,10 @@ public class Queue<T> {
 		}
 	}
 	
+	/**
+	 * Dequeue the most left T and return it.
+	 * @return
+	 */
 	public T dequeue(){
 		if(length != 0){
 			T data = leftEnd.data;

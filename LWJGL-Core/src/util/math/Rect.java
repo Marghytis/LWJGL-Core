@@ -83,6 +83,9 @@ public class Rect {
 	public boolean is0(){
 		return pos.is0() && size.is0();
 	}
+	public boolean equals(int[] coords){
+		return pos.x == coords[0] && pos.y == coords[1] && pos.x + size.x == coords[2] && pos.y + size.y == coords[3];
+	}
 	public boolean contains(Vec v){
 		return contains(v.x, v.y);
 	}

@@ -2,7 +2,7 @@ package util;
 
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
+import render.Shader;
 
 public class Color {
 
@@ -72,18 +72,18 @@ public class Color {
 		boundR = r;
 		boundG = g;
 		boundB = b;
-		GL11.glColor4f(r, g, b, boundAlpha);	
+		Shader.current.set("color", r, g, b, boundAlpha);
 	}
 	
 	public void bindKeepAlpha(){
-		GL11.glColor4f(r, g, b, boundAlpha);	
+		Shader.current.set("color", r, g, b, boundAlpha);
 		boundR = r;
 		boundG = g;
 		boundB = b;
 	}
 	
 	public void bind(){
-		GL11.glColor4f(r, g, b, a);	
+		Shader.current.set("color", r, g, b, a);
 		boundAlpha = a;
 		boundR = r;
 		boundG = g;
@@ -91,7 +91,7 @@ public class Color {
 	}
 	
 	public static void bind(float r, float g, float b, float a){
-		GL11.glColor4f(r, g, b, a);	
+		Shader.current.set("color", r, g, b, a);
 		boundAlpha = a;
 		boundR = r;
 		boundG = g;

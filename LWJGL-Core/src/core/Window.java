@@ -32,7 +32,7 @@ import util.PNGDecoder;
 public class Window {
 
 	public static int WIDTH, HEIGHT, WIDTH_HALF, HEIGHT_HALF;
-	private static ByteBuffer icon16 = loadTexture("icons/icon16.png"), icon32 = loadTexture("icons/icon32.png"), icon64 = loadTexture("icons/icon64.png");
+	private static ByteBuffer icon16, icon32, icon64;
 	public static boolean closeRequested;
 	public static boolean openAl;
 	public static PixelFormat pixelFormat;
