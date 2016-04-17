@@ -85,7 +85,7 @@ public class PNGDecoder {
     private static final byte COLOR_GREYALPHA = 4;
     private static final byte COLOR_TRUEALPHA = 6;  
     
-    private final InputStream input;
+    public final InputStream input;
     private final CRC32 crc;
     private final byte[] buffer;
     

@@ -82,7 +82,7 @@ public class TexFile {
 			this.height = decoder.getHeight();
 			
 			// Decode the PNG file in a ByteBuffer
-			ByteBuffer data = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+			ByteBuffer data = ByteBuffer.allocateDirect(4 * width * height);
 			decoder.decode(data, decoder.getWidth() * 4, PNGDecoder.RGBA);
 			data.flip();
 			

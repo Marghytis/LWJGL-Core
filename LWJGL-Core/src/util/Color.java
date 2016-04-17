@@ -67,6 +67,26 @@ public class Color {
 		set(c.r, c.g, c.b, c.a);
 	}
 	
+	public Color minus(Color c){
+		return new Color(r - c.r, g - c.g, b - c.b, a - c.a);
+	}
+	
+	public Color add(Color c){
+		r += c.r;
+		g += c.g;
+		b += c.b;
+		a += c.a;
+		return this;
+	}
+	
+	public Color scale(float scale){
+		r *= scale;
+		g *= scale;
+		b *= scale;
+		a *= scale;
+		return this;
+	}
+	
 	public void bind(float a){
 		boundAlpha = this.a*a;
 		boundR = r;
@@ -101,6 +121,15 @@ public class Color {
 	public static void bindAlpha(float alpha){
 		bind(boundR, boundG, boundB, alpha);
 		boundAlpha = alpha;
+	}
+	
+	public byte[] bytes(byte[] bytes){
+		if(bytes == null) bytes = new byte[4];
+		bytes[0] = (byte)(r*Byte.MAX_VALUE);
+		bytes[1] = (byte)(g*Byte.MAX_VALUE);
+		bytes[2] = (byte)(b*Byte.MAX_VALUE);
+		bytes[3] = (byte)(a*Byte.MAX_VALUE);
+		return bytes;
 	}
 	
 	@Override

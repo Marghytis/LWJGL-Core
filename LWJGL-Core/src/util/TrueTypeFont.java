@@ -203,17 +203,35 @@ public class TrueTypeFont {
 	}
 
 	public int getWidth(String whatchars) {
-		int totalwidth = 0;
+		int totalwidth = 0, maxLineWidth = 0;
 		CharData charData = null;
-		int currentChar = 0;
+		char currentChar = 0;
 		for (int i = 0; i < whatchars.length(); i++) {
 			currentChar = whatchars.charAt(i);
+			if(currentChar == '\n'){
+				maxLineWidth = Math.max(totalwidth, maxLineWidth);
+				totalwidth = 0;
+				continue;
+			}
 			charData = getChar(currentChar);
 			
 			if( charData != null )
 				totalwidth += charData.width;
 		}
-		return totalwidth;
+		maxLineWidth = Math.max(totalwidth, maxLineWidth);
+		return maxLineWidth;
+	}
+	
+	public int getHeight(String whatchars){
+		int height = 1;
+		char currentChar = 0;
+		for (int i = 0; i < whatchars.length(); i++) {
+			currentChar = whatchars.charAt(i);
+			if(currentChar == '\n'){
+				height++;
+			}
+		}
+		return height*fontHeight;
 	}
 
 	public int getHeight() {
