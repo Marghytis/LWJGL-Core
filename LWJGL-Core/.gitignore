@@ -1,2 +1,6 @@
 /.classpath
 /.project
+/bin/
+/.gitignore
+/LWJGL-Core.jar/bin/
+res/sound/Sarahs Welt Loop.wav
