@@ -76,14 +76,17 @@ public class Core {
 	public static boolean checkGLErrors(boolean exit, boolean print, String when){
 		int errorValue;
 		boolean foundSomething = false;
+		String out = "";
 		 while ((errorValue = GL11.glGetError()) != GL11.GL_NO_ERROR) {
 			 if(print){
-				 if(!foundSomething) System.err.println("FOUND ERROR(S) " + when + ":");
-		         String errorString = GLU.gluErrorString(errorValue);
-		         System.err.println("   - " + errorString);
+				 if(!foundSomething) out += "FOUND ERROR(S) " + when + ":";
+		         out += "\n   - " + GLU.gluErrorString(errorValue);
 			 }
 			 foundSomething = true;
         }
+		 if(foundSomething && print){
+			 new Exception(out).printStackTrace();
+		 }
 		if(foundSomething && exit){
 			if (Display.isCreated()) Display.destroy();
 			System.exit(-1);
