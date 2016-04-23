@@ -1,61 +1,128 @@
 package render;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.Hashtable;
 
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
+
+import util.Color;
 
 public class Shader {
+	/**UNIFORMS: scale: vec2, texCoords: vec4, color: vec4, texture: bool*/
+	public static Shader singleQuad = Shader.internalFiles("/res/shader/singleQuad.vert", "/res/shader/singleQuad.frag", "in_Position", "in_TexCoords");
+	/**UNIFORMS: scale: vec2, stuff=(height, zero, xOffset): vec3, colorHigh: vec4, colorLow: vec4*/
+	public static Shader graph = Shader.internalFiles("/res/shader/graph.vert", "/res/shader/graph.frag", "in_X", "in_Value");
 
-	public static int VERT_COLOR;
-	public static int FRAG_COLOR;
-	public static int VERT_TEXTURE;
-	public static int FRAG_TEXTURE;
-	static {
+	public static Shader current = null;
+
+	public void set(String field, boolean boo){
+		GL20.glUniform1i(uniformLoc(field), boo ? 1 : 0);
+	}
+	public void set(String field, float f1){
+		GL20.glUniform1f(uniformLoc(field), f1);
+	}
+	public void seti(String field, int i1){
+		GL20.glUniform1i(uniformLoc(field), i1);
+	}
+	public void set(String field, float f1, float f2){
+		GL20.glUniform2f(uniformLoc(field), f1, f2);
+	}
+	public void set(String field, float f1, float f2, float f3){
+		GL20.glUniform3f(uniformLoc(field), f1, f2, f3);
+	}
+	public void set(String field, float f1, float f2, float f3, float f4){
+		GL20.glUniform4f(uniformLoc(field), f1, f2, f3, f4);
+	}
+	public void set(String field, Color color){
+		GL20.glUniform4f(uniformLoc(field), color.r, color.g, color.b, color.a);
+	}
+	public void set(String field, int i1){
+		GL20.glUniform1i(uniformLoc(field), i1);
+	}
+	public void set2x2(String field, FloatBuffer mat2){
+		GL20.glUniformMatrix2(uniformLoc(field), true, mat2);
+	}
+	public void set3x3(String field, FloatBuffer mat3){
+		GL20.glUniformMatrix3(uniformLoc(field), true, mat3);
+	}
+	public void set2(String field, FloatBuffer floats){
+		GL20.glUniform2(uniformLoc(field), floats);
+	}
+	public void set2(String field, IntBuffer ints){
+		GL20.glUniform2(uniformLoc(field), ints);
+	}
+	
+	public int uniformLoc(String field){
+		Integer out = uniforms.get(field);
+		if(out == null){
+			out = GL20.glGetUniformLocation(handle, field);
+			uniforms.put(field, out);
+		}
+		return out;
+	}
+	
+	private int handle;
+	private Hashtable<String, Integer> uniforms = new Hashtable<>();
+	
+	private Shader(int handle){
+		this.handle = handle;
+	}
+	
+	public static Shader create(String pathVert, String pathFrag, String... attribs){
 		try {
-			VERT_COLOR = createShaderPart(readFile("res/shader/color.vert"), true);
-			FRAG_COLOR = createShaderPart(readFile("res/shader/color.frag"), false);
-			VERT_TEXTURE = createShaderPart(readFile("res/shader/texture.vert"), true);
-			FRAG_TEXTURE = createShaderPart(readFile("res/shader/texture.frag"), false);
-		} catch(IOException ex){
-			ex.printStackTrace();
-			System.exit(1);
+			return new Shader(createShader(readExternalFile(pathVert), readExternalFile(pathFrag), attribs));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
-	public static int COLOR = createShader(VERT_COLOR, FRAG_COLOR, "in_Position", "in_Color");
-	public static int TEXTURE = createShader(VERT_TEXTURE, FRAG_TEXTURE, "in_Position", "in_Color", "in_TextureCoords");
+	public static Shader withGeometry(String pathVert, String pathGeom, String pathFrag, String... attribs){
+		try {
+			return new Shader(createShaderGeom(readExternalFile(pathVert), readExternalFile(pathGeom), readExternalFile(pathFrag), attribs));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public static Shader internalFiles(String pathVert, String pathFrag, String... attribs){
+		try {
+			return new Shader(createShader(readInternalFile(pathVert), readInternalFile(pathFrag), attribs));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public static Shader internalWithGeometry(String pathVert, String pathGeom, String pathFrag, String... attribs){
+		try {
+			return new Shader(createShaderGeom(readInternalFile(pathVert), readInternalFile(pathGeom), readInternalFile(pathFrag), attribs));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
-	
-	public static void bind(int shader){
-		GL20.glUseProgram(shader);
+	public void bind(){
+		GL20.glUseProgram(handle);
+		current = this;
 	}
 	
 	public static void bindNone(){
 		GL20.glUseProgram(0);
+		current = null;
 	}
 	
-	public static int createShaderFromFile(String pathFrag){
-		try {
-			return createShader(VERT_TEXTURE, createShaderPart(readFile(pathFrag), false), "in_Position", "in_Color", "in_TextureCoords");
-		} catch(IOException ex){
-			ex.printStackTrace();
-			return TEXTURE;
-		}
+	private static int createShader(String vert, String frag, String... attribs){
+		return createShader(createShaderPart(vert, GL20.GL_VERTEX_SHADER), createShaderPart(frag, GL20.GL_FRAGMENT_SHADER), attribs);
 	}
 	
-	public static int createShaderFromFile(String pathFrag, String pathVert, String... attribs){
-		try {
-			return createShader(readFile(pathVert), readFile(pathFrag), attribs);
-		} catch(IOException ex){
-			ex.printStackTrace();
-			return TEXTURE;
-		}
-	}
-	
-	public static int createShader(String frag, String vert, String... attribs){
-		return createShader(createShaderPart(vert, true), createShaderPart(frag, false), attribs);
+	private static int createShaderGeom(String vert, String geom, String frag, String... attribs){
+		return createShader(createShaderPart(vert, GL20.GL_VERTEX_SHADER), createShaderPart(geom, GL32.GL_GEOMETRY_SHADER), createShaderPart(frag, GL20.GL_FRAGMENT_SHADER), attribs);
 	}
 	
 	/**
@@ -65,7 +132,7 @@ public class Shader {
 	 * @param attribs
 	 * @return
 	 */
-	public static int createShader(int vert, int frag, String... attribs){
+	private static int createShader(int vert, int frag, String... attribs){
 		//create program
 		int program = GL20.glCreateProgram();
 		//add shader parts to program
@@ -76,6 +143,11 @@ public class Shader {
 		}
 		//link and validate program
 		GL20.glLinkProgram(program);
+		String error = GL20.glGetProgramInfoLog(program, 1000);
+		if(error.length() > 3){
+			System.out.println("SHADER INFO LOG: LINKAGE: " + program);
+			System.out.println(error);
+		}
 		GL20.glValidateProgram(program);
 		//delete shader parts
 		GL20.glDeleteShader(vert);
@@ -83,22 +155,51 @@ public class Shader {
 		return program;
 	}
 	
-	public static int createShaderPart(String src, boolean type){
-		int handle = GL20.glCreateShader(type ? GL20.GL_VERTEX_SHADER : GL20.GL_FRAGMENT_SHADER);
+	private static int createShader(int vert, int geom, int frag, String... attribs){
+		//create program
+		int program = GL20.glCreateProgram();
+		//add shader parts to program
+		GL20.glAttachShader(program, vert);
+		GL20.glAttachShader(program, geom);
+		GL20.glAttachShader(program, frag);
+		for(int i = 0; i < attribs.length; i++){
+			GL20.glBindAttribLocation(program, i, attribs[i]);
+		}
+		//link and validate program
+		GL20.glLinkProgram(program);
+		String error = GL20.glGetProgramInfoLog(program, 1000);
+		if(error.length() > 3){
+			System.out.println("SHADER INFO LOG: LINKAGE: " + program);
+			System.out.println(error);
+		}
+		GL20.glValidateProgram(program);
+		//delete shader parts
+		GL20.glDeleteShader(vert);
+		GL20.glDeleteShader(geom);
+		GL20.glDeleteShader(frag);
+		return program;
+	}
+	
+	private static int createShaderPart(String src, int type){
+		int handle = GL20.glCreateShader(type);
 		GL20.glShaderSource(handle, src);
 		GL20.glCompileShader(handle);
 		String error = GL20.glGetShaderInfoLog(handle, 1000);
-		if(error.length() > 3){
+		if(error.length() > 1){
 			System.out.println("SHADER INFO LOG: " + src);
 			System.out.println(error);
 		}
 		return handle;
 	}
 
-	public static String readFile(String name) throws IOException{
-		File f = new File(name);
-		FileReader fReader = new FileReader(f);
-		BufferedReader reader = new BufferedReader(fReader);
+	public static String readExternalFile(String path) throws IOException {
+		return readFile(new BufferedReader(new FileReader(path)));
+	}
+	
+	public static String readInternalFile(String path) throws IOException {
+		return readFile(new BufferedReader(new InputStreamReader(Shader.class.getResourceAsStream(path), "UTF-8")));
+	}
+	public static String readFile(BufferedReader reader) throws IOException {
 		String line = reader.readLine();
 		
 		String output = "";

@@ -1,9 +1,9 @@
 package util;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -12,17 +12,27 @@ import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.awt.GraphicsEnvironment;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.util.glu.GLU;
+
+import core.Window;
+import render.Shader;
+import render.TexFile;
+import render.VAO;
+import render.VBO;
+import render.VBO.VAP;
 
 
 /**
- * A TrueType font implementation originally for Slick, edited for Bobjob's Engine
+ * A TrueType font implementation originally for Slick, edited for Bobjob's Engine, edited for Sarah's World and updated to OpenGL 3.2
  * 
  * @original author James Chambers (Jimmy)
  * @original author Jeremy Adams (elias4444)
@@ -36,121 +46,49 @@ public class TrueTypeFont {
 		ALIGN_LEFT = 0,
 		ALIGN_RIGHT = 1,
 		ALIGN_CENTER = 2;
+	public static int maxChars = 1000;
+	public static Shader fontShader = Shader.internalWithGeometry("/res/shader/text.vert", "/res/shader/text.geom", "/res/shader/text.frag", "in_Position", "in_TexCoords");
+	public static TrueTypeFont times = new TrueTypeFont(new Font("Times New Roman", 0, 40), true);
 	/** Array that holds necessary information about the font characters */
-	private IntObject[] charArray = new IntObject[256];
-	
-	/** Map of user defined font characters (Character <-> IntObject) */
-	@SuppressWarnings("rawtypes")
-	private Map customChars = new HashMap();
-
+	private CharData[] charArray = new CharData[256];
+	/** Map of user defined font characters (Character <-> CharData) */
+	private Map<Character, CharData> customChars = new HashMap<>();
 	/** Boolean flag on whether AntiAliasing is enabled or not */
 	private boolean antiAlias;
-
 	/** Font's size */
 	private int fontSize = 0;
-
 	/** Font's height */
 	private int fontHeight = 0;
-
 	/** Texture used to cache the font 0-255 characters */
 	private int fontTextureID;
-	
 	/** Default font texture width */
 	private int textureWidth = 512;
-
 	/** Default font texture height */
 	private int textureHeight = 512;
-
 	/** A reference to Java's AWT Font that we create our font texture from */
 	private Font font;
-
 	/** The font metrics for our Java AWT font */
-	private FontMetrics fontMetrics;
-
-	
+	FontMetrics fontMetrics;
+	/** Correction offsets */
 	private int correctL = 9, correctR = 8;
 	
-	private class IntObject {
-		/** Character's width */
-		public int width;
-
-		/** Character's height */
-		public int height;
-
-		/** Character's stored x position */
-		public int storedX;
-
-		/** Character's stored y position */
-		public int storedY;
-	}
-
+	public VAO vao;
 
 	public TrueTypeFont(Font font, boolean antiAlias, char[] additionalChars) {
 		this.font = font;
 		this.fontSize = font.getSize()+3;
 		this.antiAlias = antiAlias;
 
-		createSet( additionalChars );
+		createSet(additionalChars);
 		
 		fontHeight -= 1;
 		if (fontHeight <= 0) fontHeight = 1;
 	}
-
 	public TrueTypeFont(Font font, boolean antiAlias) {
 		this( font, antiAlias, null );
 	}
-	public void setCorrection(boolean on) {
-		if (on) {
-			correctL = 2;
-			correctR = 1;
-		} else {
-			correctL = 0;
-			correctR = 0;
-		}
-	}
-	private BufferedImage getFontImage(char ch) {
-		// Create a temporary image to extract the character's size
-		BufferedImage tempfontImage = new BufferedImage(1, 1,
-				BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = (Graphics2D) tempfontImage.getGraphics();
-		if (antiAlias == true) {
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-		}
-		g.setFont(font);
-		fontMetrics = g.getFontMetrics();
-		int charwidth = fontMetrics.charWidth(ch)+8;
 
-		if (charwidth <= 0) {
-			charwidth = 7;
-		}
-		int charheight = fontMetrics.getHeight()+3;
-		if (charheight <= 0) {
-			charheight = fontSize;
-		}
-
-		// Create another image holding the character we are creating
-		BufferedImage fontImage;
-		fontImage = new BufferedImage(charwidth, charheight,
-				BufferedImage.TYPE_INT_ARGB);
-		Graphics2D gt = (Graphics2D) fontImage.getGraphics();
-		if (antiAlias == true) {
-			gt.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-		}
-		gt.setFont(font);
-
-		gt.setColor(Color.WHITE);
-		int charx = 3;
-		int chary = 1;
-		gt.drawString(String.valueOf(ch), (charx), (chary)
-				+ fontMetrics.getAscent());
-
-		return fontImage;
-
-	}
-
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	private void createSet( char[] customCharsArray ) {
 		// If there are custom chars then I expand the font texture twice		
 		if	(customCharsArray != null && customCharsArray.length > 0) {
@@ -166,7 +104,7 @@ public class TrueTypeFont {
 			BufferedImage imgTemp = new BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D) imgTemp.getGraphics();
 
-			g.setColor(new Color(0,0,0,1));
+			g.setColor(new java.awt.Color(0,0,0,1));
 			g.fillRect(0,0,textureWidth,textureHeight);
 			
 			int rowHeight = 0;
@@ -182,211 +120,261 @@ public class TrueTypeFont {
 				
 				BufferedImage fontImage = getFontImage(ch);
 
-				IntObject newIntObject = new IntObject();
+				CharData newCharData = new CharData();
 
-				newIntObject.width = fontImage.getWidth();
-				newIntObject.height = fontImage.getHeight();
+				newCharData.width = (byte)fontImage.getWidth();
+				newCharData.height = (byte)fontImage.getHeight();
 
-				if (positionX + newIntObject.width >= textureWidth) {
+				if (positionX + newCharData.width >= textureWidth) {
 					positionX = 0;
 					positionY += rowHeight;
 					rowHeight = 0;
 				}
 
-				newIntObject.storedX = positionX;
-				newIntObject.storedY = positionY;
+				newCharData.storedX = (short)positionX;
+				newCharData.storedY = (short)positionY;
 
-				if (newIntObject.height > fontHeight) {
-					fontHeight = newIntObject.height;
+				if (newCharData.height > fontHeight) {
+					fontHeight = newCharData.height;
 				}
 
-				if (newIntObject.height > rowHeight) {
-					rowHeight = newIntObject.height;
+				if (newCharData.height > rowHeight) {
+					rowHeight = newCharData.height;
 				}
 
 				// Draw it here
 				g.drawImage(fontImage, positionX, positionY, null);
 
-				positionX += newIntObject.width;
+				positionX += newCharData.width;
 
 				if( i < 256 ) { // standard characters
-					charArray[i] = newIntObject;
+					charArray[i] = newCharData;
 				} else { // custom characters
-					customChars.put( new Character( ch ), newIntObject );
+					customChars.put( new Character( ch ), newCharData );
 				}
 
 				fontImage = null;
 			}
 
 			fontTextureID = loadImage(imgTemp);
-			
 
-
-					//.getTexture(font.toString(), imgTemp);
-
+			CharData charData = null;
+			//					   pos texCoords
+			byte zero = 0;
+			int bytesPerChar = 4*(2*Byte.BYTES + 2*Short.BYTES);
+			ByteBuffer buffer = BufferUtils.createByteBuffer((256 + customCharsLength)*bytesPerChar);
+			for (int i = 0; i < 256 + customCharsLength; i++) {
+				charData = getChar(i);
+				short texX1 = (short)(Short.MAX_VALUE*charData.storedX/ textureWidth),
+					texY1 = (short)(Short.MAX_VALUE*charData.storedY/ textureHeight),
+					texX2 = (short)(texX1 + (Short.MAX_VALUE*charData.width/ textureWidth)),
+					texY2 = (short)(texY1 + (Short.MAX_VALUE*charData.height/ textureHeight));
+				buffer.put(zero);//byte
+				buffer.put(zero);//byte
+				buffer.putShort(texX1);//normalized short
+				buffer.putShort(texY2);//normalized short
+				
+				buffer.put(charData.width);
+				buffer.put(zero);
+				buffer.putShort(texX2);
+				buffer.putShort(texY2);
+				
+				buffer.put(charData.width);
+				buffer.put(charData.height);
+				buffer.putShort(texX2);
+				buffer.putShort(texY1);
+				
+				buffer.put(zero);
+				buffer.put(charData.height);
+				buffer.putShort(texX1);
+				buffer.putShort(texY1);
+			}
+			buffer.flip();
+			ShortBuffer indices = BufferUtils.createShortBuffer(maxChars*6);
+			vao = new VAO(
+						new VBO(indices, GL15.GL_DYNAMIC_READ),
+						new VBO(buffer, GL15.GL_STATIC_DRAW, 2*Byte.BYTES + 2*Short.BYTES,
+							new VAP(2, GL11.GL_BYTE, false, 0),//Location
+							new VAP(2, GL11.GL_SHORT, true, 2*Byte.BYTES)));//Tex coords
 		} catch (Exception e) {
 			System.err.println("Failed to create font.");
 			e.printStackTrace();
 		}
 	}
-	
-	private void drawQuad(float drawX, float drawY, float drawX2, float drawY2,
-			float srcX, float srcY, float srcX2, float srcY2) {
-		float DrawWidth = drawX2 - drawX;
-		float DrawHeight = drawY2 - drawY;
-		float TextureSrcX = srcX / textureWidth;
-		float TextureSrcY = srcY / textureHeight;
-		float SrcWidth = srcX2 - srcX;
-		float SrcHeight = srcY2 - srcY;
-		float RenderWidth = (SrcWidth / textureWidth);
-		float RenderHeight = (SrcHeight / textureHeight);
-
-		GL11.glTexCoord2f(TextureSrcX, TextureSrcY);
-		GL11.glVertex2f(drawX, drawY);
-		GL11.glTexCoord2f(TextureSrcX, TextureSrcY + RenderHeight);
-		GL11.glVertex2f(drawX, drawY + DrawHeight);
-		GL11.glTexCoord2f(TextureSrcX + RenderWidth, TextureSrcY + RenderHeight);
-		GL11.glVertex2f(drawX + DrawWidth, drawY + DrawHeight);
-		GL11.glTexCoord2f(TextureSrcX + RenderWidth, TextureSrcY);
-		GL11.glVertex2f(drawX + DrawWidth, drawY);
-	}
 
 	public int getWidth(String whatchars) {
-		int totalwidth = 0;
-		IntObject intObject = null;
-		int currentChar = 0;
+		int totalwidth = 0, maxLineWidth = 0;
+		CharData charData = null;
+		char currentChar = 0;
 		for (int i = 0; i < whatchars.length(); i++) {
 			currentChar = whatchars.charAt(i);
-			if (currentChar < 256) {
-				intObject = charArray[currentChar];
-			} else {
-				intObject = (IntObject)customChars.get( new Character( (char) currentChar ) );
+			if(currentChar == '\n'){
+				maxLineWidth = Math.max(totalwidth, maxLineWidth);
+				totalwidth = 0;
+				continue;
 			}
+			charData = getChar(currentChar);
 			
-			if( intObject != null )
-				totalwidth += intObject.width;
+			if( charData != null )
+				totalwidth += charData.width;
 		}
-		return totalwidth;
+		maxLineWidth = Math.max(totalwidth, maxLineWidth);
+		return maxLineWidth;
+	}
+	
+	public int getHeight(String whatchars){
+		int height = 1;
+		char currentChar = 0;
+		for (int i = 0; i < whatchars.length(); i++) {
+			currentChar = whatchars.charAt(i);
+			if(currentChar == '\n'){
+				height++;
+			}
+		}
+		return height*fontHeight;
 	}
 
 	public int getHeight() {
 		return fontHeight;
 	}
 
-
-	public int getHeight(String HeightString) {
-		return fontHeight;
-	}
-
-	public int getLineHeight() {
-		return fontHeight;
-	}
-
-	public void drawString(float x, float y,
-			String whatchars, float scaleX, float scaleY) {
-		drawString(x,y,whatchars, 0, whatchars.length()-1, scaleX, scaleY, ALIGN_LEFT);
-	}
-	public void drawString(float x, float y,
-			String whatchars, float scaleX, float scaleY, int format) {
-		drawString(x,y,whatchars, 0, whatchars.length()-1, scaleX, scaleY, format);
-	}
-
-
-	public void drawString(float x, float y,
-			String whatchars, int startIndex, int endIndex,
-			float scaleX, float scaleY,
-			int format
-			) {
+	public void drawString(float x, float y, String whatchars, float scaleX, float scaleY){drawString(x, y, whatchars, Color.WHITE, scaleX, scaleY);}
+	public void drawString(float x, float y, String whatchars, Color color, float scaleX, float scaleY) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, scaleX, scaleY, ALIGN_LEFT);}
+	public void drawString(float x, float y, String whatchars, Color color, float scaleX, float scaleY, int format) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, scaleX, scaleY, format);}
+	public void drawString(float x, float y, String whatchars, Color color, int startIndex, int endIndex, float scaleX, float scaleY, int format) {
 		
-		IntObject intObject = null;
-		int charCurrent;
-		
+		char[] chars = whatchars.toCharArray();
+		CharData charData = null;
+		int currentChar;
 
-		int totalwidth = 0;
-		int i = startIndex, d, c;
+		float startX = 0;
+		int i = startIndex, dir, correction;
 		float startY = 0;
-
-
-		
 		switch (format) {
 			case ALIGN_RIGHT: {
-				d = -1;
-				c = correctR;
+				dir = -1;
+				correction = correctR;
 			
 				while (i < endIndex) {
-					if (whatchars.charAt(i) == '\n') startY -= fontHeight;
+					if(chars[i] == '\n') startY -= fontHeight;
 					i++;
 				}
 				break;
 			}
 			case ALIGN_CENTER: {
 				for (int l = startIndex; l <= endIndex; l++) {
-					charCurrent = whatchars.charAt(l);
-					if (charCurrent == '\n') break;
-					if (charCurrent < 256) {
-						intObject = charArray[charCurrent];
-					} else {
-						intObject = (IntObject)customChars.get( new Character( (char) charCurrent ) );
-					}
-					totalwidth += intObject.width-correctL;
+					currentChar = chars[l];
+					if (currentChar == '\n') break;
+					charData = getChar(currentChar);
+					startX += charData.width-correctL;
 				}
-				totalwidth /= -2;
+				startX /= -2;
 			}
 			case ALIGN_LEFT:
 			default: {
-				d = 1;
-				c = correctL;
+				dir = 1;
+				correction = correctL;
 				break;
 			}
-		
 		}
 
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTextureID);
-		GL11.glBegin(GL11.GL_QUADS);
+		int charCount = endIndex - startIndex + 1;
+		for(int j = startIndex; j <= endIndex; j++){
+			if(chars[j] == '\n'){
+				charCount--;
+			}}
 		
+		char[] indicesChars = whatchars.toCharArray();
+		ShortBuffer indices = BufferUtils.createShortBuffer(charCount*6);
+		for(int j = i; j <= endIndex && j >= startIndex; j+=dir){
+			if(chars[j] == '\n')continue;
+			short index = (short)(indicesChars[j]*4);
+			indices.put(index);
+			indices.put((short)(index + 1));
+			indices.put((short)(index + 2));
+
+			indices.put(index);
+			indices.put((short)(index + 2));
+			indices.put((short)(index + 3));
+		}
+		indices.flip();
+		
+		IntBuffer offsets = BufferUtils.createIntBuffer(charCount*2);
+
+		int X = (int)startX;
+		int Y = (int)startY;
 		while (i >= startIndex && i <= endIndex) {
 			
-			charCurrent = whatchars.charAt(i);
-			if (charCurrent < 256) {
-				intObject = charArray[charCurrent];
-			} else {
-				intObject = (IntObject)customChars.get( new Character( (char) charCurrent ) );
-			} 
+			currentChar = chars[i];
+			charData = getChar(currentChar);
 			
-			if( intObject != null ) {
-				if (d < 0) totalwidth += (intObject.width-c) * d;
-					if (charCurrent == '\n') {
-						startY -= fontHeight * d;
-						totalwidth = 0;
-						if (format == ALIGN_CENTER) {
-							for (int l = i+1; l <= endIndex; l++) {
-								charCurrent = whatchars.charAt(l);
-								if (charCurrent == '\n') break;
-								if (charCurrent < 256) {
-									intObject = charArray[charCurrent];
-								} else {
-									intObject = (IntObject)customChars.get( new Character( (char) charCurrent ) );
-								}
-								totalwidth += intObject.width-correctL;
+			if(charData != null ) {
+				if (dir < 0) X += (charData.width-correction) * dir;//align right
+				if (currentChar == '\n') {//new line
+					Y -= fontHeight * dir;
+					X = 0;
+					if(format == ALIGN_CENTER) {
+						for (int l = i+1; l <= endIndex; l++) {
+							currentChar = chars[l];
+							if (currentChar == '\n') break;
+							if (currentChar < 256) {
+								charData = charArray[currentChar];
+							} else {
+								charData = (CharData)customChars.get( new Character( (char) currentChar ) );
 							}
-							totalwidth /= -2;
+							X += charData.width-correctL;
 						}
-						//if center get next lines total width/2;
-					}
-					else {
-						drawQuad((totalwidth + intObject.width) * scaleX + x, startY * scaleY + y,
-							totalwidth * scaleX + x,
-							(startY + intObject.height) * scaleY + y, intObject.storedX + intObject.width,
-							intObject.storedY + intObject.height,intObject.storedX, 
-							intObject.storedY);
-						if (d > 0) totalwidth += (intObject.width-c) * d ;
-					}
-					i += d;
-				
+						X /= -2;
+					}//if center get next lines total width/2;
+					
+				} else {
+					offsets.put((int)(X * scaleX + x));
+					offsets.put((int)(Y * scaleY + y));
+					if (dir > 0) X += (charData.width-correction) * dir ;
+				}
+				i += dir;
 			}
 		}
-		GL11.glEnd();
+		offsets.flip();
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vao.indices.handle);
+		GL15.glBufferSubData(GL15.GL_ELEMENT_ARRAY_BUFFER, 0, indices);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		fontShader.bind();
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		fontShader.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+		fontShader.set("size", scaleX, scaleY);
+		fontShader.set2("offsets", offsets);
+		fontShader.set("color", color.r, color.g, color.b, color.a);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTextureID);
+		
+		vao.bindStuff();
+			GL11.glDrawElements(GL11.GL_TRIANGLES, indices.capacity(), GL11.GL_UNSIGNED_SHORT, 0);
+		vao.unbindStuff();
+		
+		TexFile.bindNone();
+		Shader.bindNone();
 	}
+	
+	public CharData getChar(int i){
+		if (i < 256) {
+			return charArray[i];
+		} else {
+			return (CharData)customChars.get( new Character( (char) i ) );
+		}
+	}
+	
+	private class CharData {
+		/** Character's width */
+		public byte width;
+		/** Character's height */
+		public byte height;
+		/** Character's stored x position */
+		public short storedX;
+		/** Character's stored y position */
+		public short storedY;
+	}
+	
 	public static int loadImage(BufferedImage bufferedImage) {
 	    try {
 		    short width       = (short)bufferedImage.getWidth();
@@ -428,16 +416,12 @@ public class TrueTypeFont {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId.get(0));
 			
 
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 			
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-			
-			GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
-			
-			
-			
+
 			GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
 			      internalFormat,
 			      width,
@@ -453,6 +437,44 @@ public class TrueTypeFont {
 	    }
 		
 		return -1;
+	}
+	
+	private BufferedImage getFontImage(char ch) {
+		// Create a temporary image to extract the character's size
+		BufferedImage tempfontImage = new BufferedImage(1, 1,
+				BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = (Graphics2D) tempfontImage.getGraphics();
+		if (antiAlias == true) {
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+		g.setFont(font);
+		fontMetrics = g.getFontMetrics();
+		
+		int charwidth = fontMetrics.charWidth(ch)+8;
+		if (charwidth <= 0) charwidth = 7;
+		
+		int charheight = fontMetrics.getHeight()+3;
+		if (charheight <= 0) charheight = fontSize;
+
+		// Create another image holding the character we are creating
+		BufferedImage fontImage;
+		fontImage = new BufferedImage(charwidth, charheight,
+				BufferedImage.TYPE_INT_ARGB);
+		Graphics2D gt = (Graphics2D) fontImage.getGraphics();
+		if (antiAlias == true) {
+			gt.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+		gt.setFont(font);
+
+		gt.setColor(java.awt.Color.WHITE);
+		int charx = 3;
+		int chary = 1;
+		gt.drawString(String.valueOf(ch), (charx), (chary)
+				+ fontMetrics.getAscent());
+
+		return fontImage;
 	}
 	public static boolean isSupported(String fontname) {
 		Font font[] = getFonts();

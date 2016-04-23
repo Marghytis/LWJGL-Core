@@ -12,10 +12,17 @@ public interface Updater {
 	public static void tick(){
 		double delta = Time.update(0);
 		for(Updater u : updaters){
-			if(u.update(delta)) break;
+			Core.checkGLErrors(true, true, "before updating " + u.debugName());
+			if(u.update(delta)){
+				Core.checkGLErrors(true, true, "after updating " + u.debugName());
+				break;
+			} else {
+				Core.checkGLErrors(true, true, "after updating " + u.debugName());
+			}
 		}
 	}
 	
 	public boolean update(double delta);
 	
+	public String debugName();
 }

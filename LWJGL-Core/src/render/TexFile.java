@@ -1,6 +1,7 @@
 package render;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -11,19 +12,24 @@ import util.PNGDecoder;
 
 public class TexFile {
 
-	public static TexFile emptyTex = new TexFile();
+	public static TexFile emptyTex = new TexFile("/res/EmptyTex.png", true);
 	static TexFile boundFile = emptyTex;
 
 	public String path;
 	public int handle;
 	public int width, height;
 	
-	//only use for the empty tex
-	private TexFile(){}
+	public TexFile(String path, boolean internal){
+		this.path = path;
+		if(internal){
+			createGL(readInternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		} else {
+			createGL(readExternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		}
+	}
 	
 	public TexFile(String path){
-		this.path = path;
-		createGL(readFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		this(path, false);
 	}
 	
 	public TexFile(String name, int handle){
@@ -52,10 +58,22 @@ public class TexFile {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 	}
 	
-	private ByteBuffer readFile(String name){
+	public ByteBuffer readExternalFile(String path){
 		try {
-			// Open the PNG file as an InputStream
-			InputStream in = new FileInputStream(name);
+			return readFile(new FileInputStream(path));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ByteBuffer readInternalFile(String path){
+		return readFile(TexFile.class.getResourceAsStream(path));
+	}
+	
+	private ByteBuffer readFile(InputStream in){
+		// Open the PNG file as an InputStream
+		try {
 			// Link the PNG decoder to this stream
 			PNGDecoder decoder = new PNGDecoder(in);
 			
@@ -64,7 +82,7 @@ public class TexFile {
 			this.height = decoder.getHeight();
 			
 			// Decode the PNG file in a ByteBuffer
-			ByteBuffer data = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+			ByteBuffer data = ByteBuffer.allocateDirect(4 * width * height);
 			decoder.decode(data, decoder.getWidth() * 4, PNGDecoder.RGBA);
 			data.flip();
 			
@@ -82,11 +100,13 @@ public class TexFile {
 	public void bind(){
 		if(!this.equals(boundFile)){
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
+			boundFile = this;
 		}
 	}
 	
 	public static void bindNone(){
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		boundFile = null;
 	}
 	
 	public static TexFile boundOne(){

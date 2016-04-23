@@ -32,7 +32,7 @@ import util.PNGDecoder;
 public class Window {
 
 	public static int WIDTH, HEIGHT, WIDTH_HALF, HEIGHT_HALF;
-	private static ByteBuffer icon16 = loadTexture("icons/icon16.png"), icon32 = loadTexture("icons/icon32.png"), icon64 = loadTexture("icons/icon64.png");
+	private static ByteBuffer icon16, icon32, icon64;
 	public static boolean closeRequested;
 	public static boolean openAl;
 	public static PixelFormat pixelFormat;
@@ -165,8 +165,6 @@ public class Window {
 	private static void setupOpenGL(){
 		//set the viewport
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_LINE_STIPPLE);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glCullFace(GL11.GL_FRONT_AND_BACK);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

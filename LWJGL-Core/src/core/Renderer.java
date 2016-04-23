@@ -16,8 +16,14 @@ public interface Renderer {
 	public static void render(){
 		//reset OpenGL
 		if(Core.clear) GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		renderers.forEach((r) -> r.draw());
+		for(Renderer r : renderers){
+			Core.checkGLErrors(true, true, "before rendering " + r.debugName());
+			r.draw();
+			Core.checkGLErrors(true, true, "after rendering " + r.debugName());
+		}
 	}
 	
 	public void draw();
+	
+	public String debugName();
 }

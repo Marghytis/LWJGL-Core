@@ -2,6 +2,7 @@ package core;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 import util.Color;
 import util.Time;
@@ -18,7 +19,7 @@ public class Core {
 	}
 	public Core(String name, Color clearColor){
 		Window.createMaximized(name, true);
-		Renderer.clearColor.set(clearColor);;
+		Renderer.clearColor.set(clearColor);
 		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	}
 	public Core(String name, Vec windowSize){
@@ -29,11 +30,14 @@ public class Core {
 	public int sleepTime, noSleepCounter;
 	
 	public void coreLoop(){
+		checkGLErrors(true, true, "after initialisation");
 		Time.update(0);//this is used to get the time delta for moving objects
+		Time.start(1);
+		Time.update(1);
 		while(!(Display.isCloseRequested() || Window.closeRequested))
 		{
 
-			Time.start(1);
+			Time.update(1);
 			
 			lastTime = System.currentTimeMillis();
 			
@@ -62,9 +66,31 @@ public class Core {
 			
 			Display.update();//Update screen
 
-			Time.update(1);
+			checkGLErrors(true, true, "at end of core loop");
+			
 		}
 		Window.destroy();
 		System.exit(0);
+	}
+	
+	public static boolean checkGLErrors(boolean exit, boolean print, String when){
+		int errorValue;
+		boolean foundSomething = false;
+		String out = "";
+		 while ((errorValue = GL11.glGetError()) != GL11.GL_NO_ERROR) {
+			 if(print){
+				 if(!foundSomething) out += "FOUND ERROR(S) " + when + ":";
+		         out += "\n   - " + GLU.gluErrorString(errorValue);
+			 }
+			 foundSomething = true;
+        }
+		 if(foundSomething && print){
+			 new Exception(out).printStackTrace();
+		 }
+		if(foundSomething && exit){
+			if (Display.isCreated()) Display.destroy();
+			System.exit(-1);
+		}
+		return foundSomething;
 	}
 }

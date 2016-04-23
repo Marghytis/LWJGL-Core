@@ -5,11 +5,14 @@ package util.math;
 public class UsefulF {
 	
 	public static double[] sin100 = new double[100], sin30 = new double[30], cos100 = new double[100], cos30 = new double[30];
+	public static float[] sin100F = new float[100], cos100F = new float[100];
 	static {
 		double step = Math.PI/50;
 		for(double angle = 0, i = 0; i < 100; angle += step, i++){
 			sin100[(int)i] = Math.sin(angle);
 			cos100[(int)i] = Math.cos(angle);
+			sin100F[(int)i] = (float)sin100[(int)i];
+			cos100F[(int)i] = (float)cos100[(int)i];
 		}
 	}
 	static {
@@ -47,6 +50,10 @@ public class UsefulF {
 	
 	public static double distSquare(double dx, double dy){
 		return dx*dx + dy*dy;
+	}
+	
+	public static int modTo(int value, int base){
+		return value - Math.floorDiv(value, base)*base;
 	}
 	
 	final double threehalfs = 1.5;

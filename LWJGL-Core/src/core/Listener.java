@@ -15,6 +15,8 @@ public interface Listener {
 	public static Vec[] buttonsPressed = {new Vec(), new Vec(), new Vec()};
 	
 	public static void listen(){
+
+		Core.checkGLErrors(true, true, "before listening mouse");
 		while(Mouse.next()){
 			int button = Mouse.getEventButton();
 			if(button >= 0){
@@ -33,6 +35,7 @@ public interface Listener {
 				}
 			}
 		}
+		Core.checkGLErrors(true, true, "before listening keyboard");
 		while(Keyboard.next()){
 			if(Keyboard.getEventKeyState()){
 				for(Listener l : listeners){
@@ -44,6 +47,7 @@ public interface Listener {
 				}
 			}
 		}
+		Core.checkGLErrors(true, true, "after listening keyboard");
 	}
 	
 	public static Vec getMousePos(){
