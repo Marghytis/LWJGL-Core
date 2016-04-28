@@ -1,4 +1,5 @@
 #version 150 core
+//singleQuad
 
 uniform sampler2D texture_diffuse;
 uniform vec4 color;
@@ -12,7 +13,7 @@ void main(void){
 
 	//out_Color = vec4(1, 0, 0, 1);
 	if(texture){
-		out_Color = texture(texture_diffuse, pass_texCoords)*color;
+		out_Color = texture2D(texture_diffuse, pass_texCoords)*color;
 	} else {
 		out_Color = color;
 	}

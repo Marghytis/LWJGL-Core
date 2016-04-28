@@ -57,6 +57,9 @@ public class Shader {
 	public void set2(String field, IntBuffer ints){
 		GL20.glUniform2(uniformLoc(field), ints);
 	}
+	public void set4(String field, FloatBuffer floats){
+		GL20.glUniform4(uniformLoc(field), floats);
+	}
 	
 	public int uniformLoc(String field){
 		Integer out = uniforms.get(field);

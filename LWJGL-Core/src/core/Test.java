@@ -27,15 +27,10 @@ public class Test implements Renderer {
 
 	public static void main(String[] args){
 		
-		System.out.println(UsefulF.modTo(-6, 10));
-		System.out.println("exiting here in the main loop...");
-		System.exit(-1);
-		
-		Window.pixelFormat = new PixelFormat();
-		Window.contextAttribs = new ContextAttribs(3, 2)
+		Window.contextAttribs = new ContextAttribs(3, 3)
 		    .withForwardCompatible(true)
 		    .withProfileCore(true);
-		Core core = new Core("OpenGL test");
+		Core core = new Core("OpenGL test");System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		Test main = new Test();
 		Renderer.renderers.add(main);
 		main.init();
@@ -97,8 +92,9 @@ public class Test implements Renderer {
 		Render.drawSingleQuad(singleQuad, Color.GREEN, tex, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, true);
 		
 //		
-//		String test = "012345Test im Testing stuff. \n .-#?!)({}\n\nHuhu!!!!876543210";
-//		font.drawString(0, 0, test, Color.GREEN, 3, test.length()-1-4, 1, 1, TrueTypeFont.ALIGN_CENTER);
+		String test = "012345Test im Testingh)(&()()()(){} stuff. \n .-#?!)({}\n\nHuhu!!!!876543210";
+		test = "0123456789";
+		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, TrueTypeFont.ALIGN_CENTER);
 		
 	}
 	
@@ -113,5 +109,9 @@ public class Test implements Renderer {
 		
 		GL30.glBindVertexArray(0);
 		GL30.glDeleteVertexArrays(vao);
+	}
+
+	public String debugName() {
+		return "LWJGL-Core-Tester";
 	}
 }

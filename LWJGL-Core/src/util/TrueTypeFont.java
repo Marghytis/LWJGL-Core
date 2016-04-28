@@ -341,11 +341,11 @@ public class TrueTypeFont {
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 		fontShader.bind();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		fontShader.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 		fontShader.set("size", scaleX, scaleY);
 		fontShader.set2("offsets", offsets);
 		fontShader.set("color", color.r, color.g, color.b, color.a);
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTextureID);
 		
 		vao.bindStuff();

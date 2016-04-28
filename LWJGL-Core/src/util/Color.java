@@ -18,6 +18,7 @@ public class Color {
 
 	public static float boundAlpha = 1, boundR = 1, boundG = 1, boundB = 1;
 	public float r, g, b, a;
+	public byte[] bytes = new byte[4];
 	
 	public Color(Random random, float minimum){
 		this(minimum + (random.nextFloat()*(1-minimum)), minimum + (random.nextFloat()*(1-minimum)), minimum + (random.nextFloat()*(1-minimum)));
@@ -33,6 +34,7 @@ public class Color {
 		g = Float.parseFloat(args[1]);
 		b = Float.parseFloat(args[2]);
 		a = Float.parseFloat(args[3]);
+		updateBytes();
 	}
 	
 	public Color(float r, float g, float b){
@@ -44,10 +46,19 @@ public class Color {
 		this.g = g;
 		this.b = b;
 		this.a = a;
+		updateBytes();
 	}
 
 	public Color(Color color) {
 		this(color.r, color.g, color.b, color.a);
+	}
+	
+	public byte[] updateBytes(){
+		bytes[0] = (byte)(Byte.MAX_VALUE*r);
+		bytes[1] = (byte)(Byte.MAX_VALUE*g);
+		bytes[2] = (byte)(Byte.MAX_VALUE*b);
+		bytes[3] = (byte)(Byte.MAX_VALUE*a);
+		return bytes;
 	}
 
 	public void set(float r, float g, float b, float a){
