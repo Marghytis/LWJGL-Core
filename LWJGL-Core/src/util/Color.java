@@ -103,10 +103,12 @@ public class Color {
 		boundR = r;
 		boundG = g;
 		boundB = b;
+		if(Shader.current != null)
 		Shader.current.set("color", r, g, b, boundAlpha);
 	}
 	
 	public void bindKeepAlpha(){
+		if(Shader.current != null)
 		Shader.current.set("color", r, g, b, boundAlpha);
 		boundR = r;
 		boundG = g;
@@ -114,6 +116,7 @@ public class Color {
 	}
 	
 	public void bind(){
+		if(Shader.current != null)
 		Shader.current.set("color", r, g, b, a);
 		boundAlpha = a;
 		boundR = r;
@@ -122,6 +125,7 @@ public class Color {
 	}
 	
 	public static void bind(float r, float g, float b, float a){
+		if(Shader.current != null)
 		Shader.current.set("color", r, g, b, a);
 		boundAlpha = a;
 		boundR = r;

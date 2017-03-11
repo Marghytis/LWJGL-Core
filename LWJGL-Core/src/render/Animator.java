@@ -2,6 +2,7 @@ package render;
 
 public class Animator {
 
+	public TexQuad quad;
 	public Animation ani;
 	public Texture tex;
 	public int pos;
@@ -40,10 +41,16 @@ public class Animator {
 				if(pos >= ani.taskTime){
 					executeTask();
 				}
-				this.tex = ani.atlas.texs[ani.indices[pos]];
+				setTex(ani.atlas.texs[ani.indices[pos]]);
 			}
 			deltaT += delta;
 		}
+	}
+	
+	private void setTex(Texture tex){
+		this.tex = tex;
+		if(quad == null) quad = new TexQuad(tex);
+		quad.updateTex(tex);
 	}
 	
 	public void setAnimation(Animation ani, Runnable endTask){
@@ -55,7 +62,7 @@ public class Animator {
 			this.pos = 0;
 			
 			this.ani = ani;
-			this.tex = ani.atlas.texs[ani.indices[pos]];
+			setTex(ani.atlas.texs[ani.indices[pos]]);
 			this.endTask = endTask;
 			if(ani.frameTime == -1){
 				instantSwitch = true;
@@ -76,7 +83,7 @@ public class Animator {
 			lastTask = this.endTask;
 					
 			this.ani = null;
-			this.tex = tex;
+			setTex(tex);
 			this.endTask = endTask;
 			this.pos = 0;
 			

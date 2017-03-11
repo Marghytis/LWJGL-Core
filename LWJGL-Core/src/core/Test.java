@@ -9,19 +9,21 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.PixelFormat;
 
+import render.Framebuffer;
 import render.Render;
 import render.Shader;
 import render.TexAtlas;
 import render.TexFile;
+import render.TexQuad;
 import render.Texture;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
 import util.Color;
 import util.TrueTypeFont;
-import util.math.UsefulF;
+import util.math.Vec;
+import util.shapes.Circle;
 
 public class Test implements Renderer {
 
@@ -38,7 +40,7 @@ public class Test implements Renderer {
 	}
 
 	public Shader shader = Shader.internalWithGeometry("/res/shader/sprite.vert", "/res/shader/sprite.geom", "/res/shader/sprite.frag", "in_position", "in_rotation", "in_texCoords", "in_mirror", "in_color", "in_z", "in_size");
-	public Texture tex = new TexAtlas(new TexFile("/res/Meteor.png", true), 4, 1, 0.5f, 0.5f).texs[0];
+	public Texture tex = new TexAtlas(new TexFile("/res/Meteor.png", true), 4, 1, -0.5f, -0.5f).texs[0];
 	public TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 40), true);
 	//in_position	: vec2
 	//in_rotation	: float
@@ -72,7 +74,18 @@ public class Test implements Renderer {
 				new VAP(1, GL11.GL_FLOAT, false, 10*Float.BYTES),//float in_z
 				new VAP(1, GL11.GL_FLOAT, false, 11*Float.BYTES));//float in_size
 		vao = new VAO(null, vbo);
+		
+		circle = new Circle(new Vec(), 100, 50, Color.BLUE);
+		framebuffer = new Framebuffer("Frame", Window.WIDTH, Window.HEIGHT);
+		quad = Render.quadInScreen((short)-Window.WIDTH_HALF, (short)-Window.HEIGHT_HALF, (short)Window.WIDTH_HALF, (short)Window.HEIGHT_HALF);
+		
+		quad2 = new TexQuad(tex);
 	}
+	
+	Circle circle;
+	Framebuffer framebuffer;
+	VAO quad;
+	TexQuad quad2;
 
 	public void draw() {
 		
@@ -88,14 +101,23 @@ public class Test implements Renderer {
 //		TexFile.bindNone();
 //		Shader.bindNone();
 		
-		
-		Render.drawSingleQuad(singleQuad, Color.GREEN, tex, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, true);
-		
+//		//Render a single quad with a texture
+//		Render.drawSingleQuad(singleQuad, Color.GREEN, tex, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, true);
 //		
-		String test = "012345Test im Testingh)(&()()()(){} stuff. \n .-#?!)({}\n\nHuhu!!!!876543210";
-		test = "0123456789";
-		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, TrueTypeFont.ALIGN_CENTER);
-		
+//		//Render a String
+//		String test = "012345Test im Testingh)(&()()()(){} stuff. \n .-#?!)({}\n\nHuhu!!!!876543210";
+//		test = "0123456789";
+//		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, TrueTypeFont.ALIGN_CENTER);
+//		
+//		//Render a circle shape to a framebuffer and then render the framebuffer to the screen
+//		framebuffer.bind();
+//		circle.render(new Vec(), 1);
+//		Framebuffer.bindNone();
+//		Render.drawSingleQuad(quad, Color.WHITE, framebuffer.getTex(), 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, true);
+//		
+		//render a texQuad
+		quad2.update(new Vec(100, 0), 0.5, 2, true);
+		quad2.render(new Vec(), 0, new Vec(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF), Color.YELLOW);
 	}
 	
 	public void after(){

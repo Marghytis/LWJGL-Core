@@ -64,6 +64,7 @@ public class TexAtlas {
 	
 	public void addInfo(TexInfo... infos){
 		this.infos = infos;
+		applyInfos();
 	}
 	
 	public void applyInfos(){

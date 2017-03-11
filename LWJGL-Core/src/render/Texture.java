@@ -31,6 +31,10 @@ public class Texture {
 		this.pixelCoords[3] = pixelCoords[1] + file.height;
 		allTextures.add(this);
 	}
+	
+	public Texture(TexFile file, double offsetX, double offsetY){
+		this(file, 0, 0, file.width, file.height, offsetX, offsetY);
+	}
 
 	public Texture(TexFile file, int x1, int y1, int w, int h, double offsetX, double offsetY){
 		

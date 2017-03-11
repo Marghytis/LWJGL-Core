@@ -59,14 +59,14 @@ public class Render {
 	 * @param texture : bool uniform - use Texture or not
 	 * @return
 	 */
-	public static VAO quadInScreen(short x1, short y1, short x2, short y2){
+	public static VAO quadInScreen(int x1, int y1, int x2, int y2){
 		return new VAO(
 				new VBO(standardIndex, GL15.GL_STATIC_READ),
 				new VBO(createBuffer(new short[]{
-						x1, y1, 0, 1,
-						x2, y1, 1, 1,
-						x2, y2, 1, 0,
-						x1, y2, 0, 0}), GL15.GL_STATIC_DRAW, 4*Short.BYTES,
+						(short)x1, (short)y1, 0, 1,
+						(short)x2, (short)y1, 1, 1,
+						(short)x2, (short)y2, 1, 0,
+						(short)x1, (short)y2, 0, 0}), GL15.GL_STATIC_DRAW, 4*Short.BYTES,
 						new VAP(2, GL11.GL_SHORT, false, 0),
 						new VAP(2, GL11.GL_SHORT, false, 2*Short.BYTES)));
 	}

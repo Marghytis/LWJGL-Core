@@ -37,12 +37,18 @@ public class TexFile {
 		this.handle = handle;
 	}
 	
+	public TexFile(String name, int width, int height){
+		this.width = width;
+		this.height = height;
+		createGL(null, GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+	}
+	
 	/**
 	 * Width and height have to be set before
 	 * @param data The data of the texture
 	 * @param format Texture format (usually GL11.GL_RGBA)
 	 * @param internalFormat Internal format of the texture (usually GL11.GL_RGBA8)
-	 * @param dataType Data type of each information (GL11.GL_FLOAT usually) 
+	 * @param dataType Data type of each information (GL11.GL_UNSIGNED_BYTE usually) 
 	 */
 	private void createGL(ByteBuffer data, int format, int internalFormat, int dataType){
 		// Create a new texture object in memory and bind it
