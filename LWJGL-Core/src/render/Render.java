@@ -72,9 +72,14 @@ public class Render {
 	}
 
 	public static void drawSingleQuad(VAO vao, Color color, Texture tex, float scaleX, float scaleY, boolean texture){
+		drawSingleQuad(vao, color, tex, 0, 0, scaleX, scaleY, texture, 0);
+	}
+	public static void drawSingleQuad(VAO vao, Color color, Texture tex, double offX, double offY, float scaleX, float scaleY, boolean texture, double z){
 
 		Shader.singleQuad.bind();
+		Shader.singleQuad.set("offset", (float)offX, (float)offY);
 		Shader.singleQuad.set("scale", scaleX, scaleY);
+		Shader.singleQuad.set("z", (float)z);
 		if(texture){
 			tex.file.bind();
 			Shader.singleQuad.set("texCoords", tex.texCoords[0], tex.texCoords[1], tex.texCoords[2] - tex.texCoords[0], tex.texCoords[3] - tex.texCoords[1]);
