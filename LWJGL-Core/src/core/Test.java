@@ -1,7 +1,7 @@
 package core;
 
 import java.awt.Font;
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ContextAttribs;
@@ -32,7 +32,8 @@ public class Test implements Renderer {
 		Window.contextAttribs = new ContextAttribs(3, 3)
 		    .withForwardCompatible(true)
 		    .withProfileCore(true);
-		Core core = new Core("OpenGL test");System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
+		Window.createMaximized("OpenGL test", true, "Witch.png");
+		Core core = new Core(Color.BLACK); System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		Test main = new Test();
 		Renderer.renderers.add(main);
 		main.init();
@@ -62,8 +63,10 @@ public class Test implements Renderer {
 	
 	public void init(){
 		vertexCount = 1;
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(vertexCount*12);
-		buffer.put(vertices);
+		ByteBuffer buffer = BufferUtils.createByteBuffer(vertexCount*12*Float.BYTES);
+		for(int k = 0; k < vertices.length; k++){
+			buffer.putFloat(vertices[k]);
+		}
 		buffer.flip();
 		vbo = new VBO(buffer, GL15.GL_STATIC_DRAW, 12*Float.BYTES,
 				new VAP(2, GL11.GL_FLOAT, false, 0),//vec2 in_position
@@ -109,15 +112,15 @@ public class Test implements Renderer {
 //		test = "0123456789";
 //		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, TrueTypeFont.ALIGN_CENTER);
 //		
-//		//Render a circle shape to a framebuffer and then render the framebuffer to the screen
+		//Render a circle shape to a framebuffer and then render the framebuffer to the screen
 //		framebuffer.bind();
-//		circle.render(new Vec(), 1);
+		circle.render(new Vec(500,500), 2);
 //		Framebuffer.bindNone();
 //		Render.drawSingleQuad(quad, Color.WHITE, framebuffer.getTex(), 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, true);
 //		
-		//render a texQuad
-		quad2.update(new Vec(100, 0), 0.5, 2, true);
-		quad2.render(new Vec(), 0, new Vec(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF), Color.YELLOW);
+//		//render a texQuad
+//		quad2.update(new Vec(100, 0), 0.5, 2, true);
+//		quad2.render(new Vec(), 0, new Vec(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF), Color.YELLOW);
 	}
 	
 	public void after(){

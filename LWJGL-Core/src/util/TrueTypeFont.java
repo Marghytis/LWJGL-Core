@@ -216,7 +216,7 @@ public class TrueTypeFont {
 			charData = getChar(currentChar);
 			
 			if( charData != null )
-				totalwidth += charData.width;
+				totalwidth += charData.width-correctL;
 		}
 		maxLineWidth = Math.max(totalwidth, maxLineWidth);
 		return maxLineWidth;

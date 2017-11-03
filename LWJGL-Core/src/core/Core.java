@@ -14,11 +14,19 @@ public class Core {
 	
 	public Runnable doAfterTheRest;
 	
+	public Core(Color clearColor){
+		Renderer.clearColor.set(clearColor);
+		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	}
+	
 	public Core(String name){
 		this(name, Color.BLACK);
 	}
 	public Core(String name, Color clearColor){
-		Window.createMaximized(name, true);
+		this(name, clearColor, true);
+	}
+	public Core(String name, Color clearColor, boolean visible){
+		Window.createMaximized(name, true, visible);
 		Renderer.clearColor.set(clearColor);
 		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	}

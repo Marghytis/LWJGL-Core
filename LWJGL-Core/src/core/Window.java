@@ -52,9 +52,16 @@ public class Window {
 		create();
 	}
 	
-	public static JFrame frame;
+	static JFrame frame;
+	
+	public static void setVisible(boolean visible){
+		frame.setVisible(visible);
+	}
 	
 	public static void createMaximized(String name, boolean openAl){
+		createMaximized(name, openAl, true);
+	}
+	public static void createMaximized(String name, boolean openAl, String splashScreen){
 		Window.openAl = openAl;
 		frame = new JFrame(name);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -78,6 +85,7 @@ public class Window {
 		frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
 		frame.add(canvas);
 		canvas.setSize(frame.getWidth(), frame.getHeight());
+//		canvas.setVisible(visible);
 
 		Window.createCanvas(canvas);
 	}

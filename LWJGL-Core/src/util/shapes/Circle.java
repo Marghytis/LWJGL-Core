@@ -89,9 +89,11 @@ public class Circle extends Shape {
 		Shader.simpleShape.bind();
 		bindStuff();
 
-		Shader.simpleShape.set("scale", size/Window.WIDTH_HALF, size/Window.HEIGHT_HALF);
+		Shader.simpleShape.set("size", size);
+		Shader.simpleShape.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 		Shader.simpleShape.set("offset", (float)offset.x, (float)offset.y, (float)z);
 		Shader.simpleShape.set("color", color);
+		Shader.simpleShape.set("texture", false);
 		
 		GL11.glDrawElements(GL11.GL_TRIANGLES, corners*3, GL11.GL_UNSIGNED_BYTE, 0);
 		
