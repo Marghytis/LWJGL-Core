@@ -1,15 +1,8 @@
 package core;
 
-import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.*;
 
 import util.math.Vec;
 
@@ -54,10 +47,10 @@ public interface Listener3 {
 	static GLFWErrorCallback errorCallback = errorCallbackPrint(System.err);
 	
 	public static void init(long window){
-		GLFW.glfwSetKeyCallback(window, key);
-		GLFW.glfwSetCursorPosCallback(window, cursorPos);
-		GLFW.glfwSetMouseButtonCallback(window, mouseButton);
-		GLFW.glfwSetErrorCallback(errorCallback);
+		glfwSetKeyCallback(window, key);
+		glfwSetCursorPosCallback(window, cursorPos);
+		glfwSetMouseButtonCallback(window, mouseButton);
+		glfwSetErrorCallback(errorCallback);
 	}
 	
 	public static void exit(){

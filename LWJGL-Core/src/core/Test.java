@@ -32,7 +32,7 @@ public class Test implements Renderer {
 		Window.contextAttribs = new ContextAttribs(3, 3)
 		    .withForwardCompatible(true)
 		    .withProfileCore(true);
-		Window.createMaximized("OpenGL test", true, "Witch.png");
+		Window.createMaximized("OpenGL test", true);
 		Core core = new Core(Color.BLACK); System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		Test main = new Test();
 		Renderer.renderers.add(main);

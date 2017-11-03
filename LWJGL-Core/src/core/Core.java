@@ -14,6 +14,8 @@ public class Core {
 	
 	public Runnable doAfterTheRest;
 	
+	public Core(){}
+	
 	public Core(Color clearColor){
 		Renderer.clearColor.set(clearColor);
 		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);

@@ -59,9 +59,6 @@ public class Window {
 	}
 	
 	public static void createMaximized(String name, boolean openAl){
-		createMaximized(name, openAl, true);
-	}
-	public static void createMaximized(String name, boolean openAl, String splashScreen){
 		Window.openAl = openAl;
 		frame = new JFrame(name);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
