@@ -49,8 +49,8 @@ public interface Function {
 	
 	/**
 	 * Creates the Function of the above derivative but sets its peak below the origin
-	 * @param width
-	 * @param height
+	 * @param w
+	 * @param h
 	 * @return
 	 */
 	public static Function quartic(double w, double h){

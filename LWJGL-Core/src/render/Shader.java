@@ -52,19 +52,19 @@ public class Shader {
 		GL20.glUniform1i(uniformLoc(field), i1);
 	}
 	public void set2x2(String field, FloatBuffer mat2){
-		GL20.glUniformMatrix2(uniformLoc(field), true, mat2);
+		GL20.glUniformMatrix2fv(uniformLoc(field), true, mat2);
 	}
 	public void set3x3(String field, FloatBuffer mat3){
-		GL20.glUniformMatrix3(uniformLoc(field), true, mat3);
+		GL20.glUniformMatrix3fv(uniformLoc(field), true, mat3);
 	}
 	public void set2(String field, FloatBuffer floats){
-		GL20.glUniform2(uniformLoc(field), floats);
+		GL20.glUniform2fv(uniformLoc(field), floats);
 	}
 	public void set2(String field, IntBuffer ints){
-		GL20.glUniform2(uniformLoc(field), ints);
+		GL20.glUniform2iv(uniformLoc(field), ints);
 	}
 	public void set4(String field, FloatBuffer floats){
-		GL20.glUniform4(uniformLoc(field), floats);
+		GL20.glUniform4fv(uniformLoc(field), floats);
 	}
 	
 	public int uniformLoc(String field){

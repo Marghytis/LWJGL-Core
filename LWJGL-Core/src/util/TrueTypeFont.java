@@ -1,33 +1,14 @@
 package util;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
+import java.awt.image.*;
+import java.nio.*;
+import java.util.*;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.util.glu.GLU;
+import org.lwjgl.opengl.*;
 
-import core.Window;
-import render.Shader;
-import render.TexFile;
-import render.VAO;
-import render.VBO;
+import render.*;
 import render.VBO.VAP;
 
 
@@ -238,10 +219,11 @@ public class TrueTypeFont {
 		return fontHeight;
 	}
 
-	public void drawString(float x, float y, String whatchars, float scaleX, float scaleY){drawString(x, y, whatchars, Color.WHITE, scaleX, scaleY);}
-	public void drawString(float x, float y, String whatchars, Color color, float scaleX, float scaleY) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, scaleX, scaleY, ALIGN_LEFT);}
-	public void drawString(float x, float y, String whatchars, Color color, float scaleX, float scaleY, int format) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, scaleX, scaleY, format);}
-	public void drawString(float x, float y, String whatchars, Color color, int startIndex, int endIndex, float scaleX, float scaleY, int format) {
+	public void drawString(float x, float y, String whatchars, float scaleX, float scaleY){drawString(x, y, whatchars, Color.WHITE, 1, 1, scaleX, scaleY);}
+	public void drawString(float x, float y, String whatchars, float sizeX, float sizeY, float scaleX, float scaleY){drawString(x, y, whatchars, Color.WHITE, sizeX, sizeY, scaleX, scaleY);}
+	public void drawString(float x, float y, String whatchars, Color color, float sizeX, float sizeY, float scaleX, float scaleY) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, sizeX, sizeY, scaleX, scaleY, ALIGN_LEFT);}
+	public void drawString(float x, float y, String whatchars, Color color, float sizeX, float sizeY, float scaleX, float scaleY, int format) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, sizeX, sizeY, scaleX, scaleY, format);}
+	public void drawString(float x, float y, String whatchars, Color color, int startIndex, int endIndex, float sizeX, float sizeY, float scaleX, float scaleY, int format) {
 		
 		char[] chars = whatchars.toCharArray();
 		CharData charData = null;
@@ -328,7 +310,7 @@ public class TrueTypeFont {
 					}//if center get next lines total width/2;
 					
 				} else {
-					offsets.put((int)(X * scaleX + x));
+					offsets.put((int)(X * sizeX + x));
 					offsets.put((int)(Y * scaleY + y));
 					if (dir > 0) X += (charData.width-correction) * dir ;
 				}
@@ -341,8 +323,8 @@ public class TrueTypeFont {
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 		fontShader.bind();
-		fontShader.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
-		fontShader.set("size", scaleX, scaleY);
+		fontShader.set("scale", scaleX, scaleY);
+		fontShader.set("size", sizeX, sizeY);
 		fontShader.set2("offsets", offsets);
 		fontShader.set("color", color.r, color.g, color.b, color.a);
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -414,7 +396,11 @@ public class TrueTypeFont {
 			IntBuffer   textureId =  BufferUtils.createIntBuffer(1);;
 			GL11.glGenTextures(textureId);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId.get(0));
-			
+			// All RGB bytes are aligned to each other and each component is 1 byte
+			GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+
+			// Upload the texture data and generate mip maps (for scaling)
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0/*??*/, internalFormat, width, height, 0, format, GL11.GL_UNSIGNED_BYTE, byteBuffer);
 
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
@@ -422,13 +408,14 @@ public class TrueTypeFont {
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 
-			GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
-			      internalFormat,
-			      width,
-			      height,
-			      format,
-			      GL11.GL_UNSIGNED_BYTE,
-			      byteBuffer);
+//			GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
+//			      internalFormat,
+//			      width,
+//			      height,
+//			      format,
+//			      GL11.GL_UNSIGNED_BYTE,
+//			      byteBuffer);
+
 			return textureId.get(0);
 		    
 		} catch (Exception e) {

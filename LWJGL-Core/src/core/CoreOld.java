@@ -1,48 +1,54 @@
 package core;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 import org.lwjgl.opengl.GL11;
 
-import util.Color;
-import util.Time;
+import util.*;
+import util.math.Vec;
 
-public class Core3 extends Core {
+public class CoreOld {
 
-
-	private double dt = 1000/60.0, lastTime, tickLength;
-	private int sleepTime, noSleepCounter;
+	public static boolean clear = true;
 	
-	private Runnable doAfterTheRest;
-	private Window3 window;
-
-	public Core3(Window3 window, Color clearColor) {
-		this.window = window;
+	public Runnable doAfterTheRest;
+	
+	public CoreOld(){}
+	
+	public CoreOld(Color clearColor){
 		Renderer.clearColor.set(clearColor);
 		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	}
 	
-	public void init(){
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-		});
+	public CoreOld(String name){
+		this(name, Color.BLACK);
 	}
-
+	public CoreOld(String name, Color clearColor){
+		this(name, clearColor, true);
+	}
+	public CoreOld(String name, Color clearColor, boolean visible){
+		WindowOld.createMaximized(name, true, visible);
+		Renderer.clearColor.set(clearColor);
+		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	}
+	public CoreOld(String name, Vec windowSize){
+		WindowOld.create(name, windowSize.xInt(), windowSize.yInt(), true);
+	}
+	
+	double dt = 1000/60.0, lastTime, tickLength;
+	public int sleepTime, noSleepCounter;
+	
 	public void coreLoop(){
 		checkGLErrors(true, true, "after initialisation");
 		Time.update(0);//this is used to get the time delta for moving objects
 		Time.start(1);
 		Time.update(1);
-		while(!(Display.isCloseRequested() || Window.closeRequested))
+		while(!(Display.isCloseRequested() || WindowOld.closeRequested))
 		{
 
 			Time.update(1);
 			
 			lastTime = System.currentTimeMillis();
 			
-			Listener.listen();//LISTEN INPUT
+			ListenerOld.listen();//LISTEN INPUT
 			
 			Updater.tick();//UPDATE GAME LOGIC
 			
@@ -70,7 +76,7 @@ public class Core3 extends Core {
 			checkGLErrors(true, true, "at end of core loop");
 			
 		}
-		Window.destroy();
+		WindowOld.destroy();
 		System.exit(0);
 	}
 	

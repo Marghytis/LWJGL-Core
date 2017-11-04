@@ -3,15 +3,13 @@ package util.shapes;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.*;
 
-import core.Window;
-import render.Shader;
-import render.VBO;
+import core.WindowOld;
+import render.*;
 import render.VBO.VAP;
 import util.Color;
-import util.math.Vec;
+import util.math.*;
 
 public class Circle extends Shape {
 
@@ -82,22 +80,22 @@ public class Circle extends Shape {
 				new VAP(2, GL11.GL_FLOAT, false, 0))};
 	}
 
-	public void render(Vec offset, float size){
-		this.render(offset, 0, size);
+	public void render(Vec offset, Vec scale, float size){
+		this.render(offset, scale, 0, size);
 	}
-	public void render(Vec offset, double z, float size) {
+	public void render(Vec offset, Vec scale, double z, float size) {
 		Shader.simpleShape.bind();
-		bindStuff();
 
 		Shader.simpleShape.set("size", size);
-		Shader.simpleShape.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+		Shader.simpleShape.set("scale", (float)scale.x, (float)scale.y);
 		Shader.simpleShape.set("offset", (float)offset.x, (float)offset.y, (float)z);
 		Shader.simpleShape.set("color", color);
 		Shader.simpleShape.set("texture", false);
 		
+		bindStuff();
 		GL11.glDrawElements(GL11.GL_TRIANGLES, corners*3, GL11.GL_UNSIGNED_BYTE, 0);
-		
 		unbindStuff();
+		
 		Shader.bindNone();
 	}
 

@@ -6,7 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-import core.Window;
+import core.WindowOld;
 import render.Render;
 import render.Shader;
 import render.VBO;
@@ -30,7 +30,7 @@ public class Quad extends Shape {
 		Shader.simpleShape.bind();
 		bindStuff();
 
-		Shader.simpleShape.set("scale", size/Window.WIDTH_HALF, size/Window.HEIGHT_HALF);
+		Shader.simpleShape.set("scale", size/WindowOld.WIDTH_HALF, size/WindowOld.HEIGHT_HALF);
 		Shader.simpleShape.set("offset", (float)offset.x, (float)offset.y, (float)z);
 		Shader.simpleShape.set("color", color);
 		

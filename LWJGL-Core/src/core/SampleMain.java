@@ -3,11 +3,11 @@ package core;
 public class SampleMain {
 
 	public static void main(String[] args){
-		Core core = new Core("Sample");
+		CoreOld core = new CoreOld("Sample");
 
 		Updater.updaters.add(null);
 		Renderer.renderers.add(null);
-		Listener.listeners.add(null);
+		ListenerOld.listeners.add(null);
 		
 		core.coreLoop();
 	}

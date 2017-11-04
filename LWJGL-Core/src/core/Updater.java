@@ -12,13 +12,8 @@ public interface Updater {
 	public static void tick(){
 		double delta = Time.update(0);
 		for(Updater u : updaters){
-			Core.checkGLErrors(true, true, "before updating " + u.debugName());
-			if(u.update(delta)){
-				Core.checkGLErrors(true, true, "after updating " + u.debugName());
+			if(u.update(delta))
 				break;
-			} else {
-				Core.checkGLErrors(true, true, "after updating " + u.debugName());
-			}
 		}
 	}
 	

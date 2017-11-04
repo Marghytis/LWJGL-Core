@@ -6,7 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-import core.Window;
+import core.WindowOld;
 import render.Shader;
 import render.VBO;
 import render.VBO.VAP;
@@ -32,7 +32,7 @@ public class Line extends Shape {
 		Shader.line.bind();
 		bindStuff();
 
-		Shader.line.set("scale", size/Window.WIDTH_HALF, size/Window.HEIGHT_HALF);
+		Shader.line.set("scale", size/WindowOld.WIDTH_HALF, size/WindowOld.HEIGHT_HALF);
 		Shader.line.set("offset", (float)offset.x, (float)offset.y);
 		Shader.line.set("color", color);
 		GL11.glDrawArrays(GL11.GL_LINE_STRIP, 0, length);

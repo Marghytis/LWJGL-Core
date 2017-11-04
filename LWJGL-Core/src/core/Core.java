@@ -1,50 +1,63 @@
 package core;
 
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
+import javax.swing.*;
 
-import util.Color;
-import util.Time;
-import util.math.Vec;
+import org.lwjgl.glfw.GLFWErrorCallback;
 
-public class Core {
+import static org.lwjgl.glfw.GLFW.*;
 
-	public static boolean clear = true;
+import util.*;
+import util.math.IntVec;
+
+public class Core extends CoreOld {
+
+	public IntVec SIZE_HALF, SIZE;
+	private double dt = 1000/60.0, lastTime, tickLength;
+	private int sleepTime, noSleepCounter;
 	
-	public Runnable doAfterTheRest;
-	
-	public Core(){}
-	
-	public Core(Color clearColor){
-		Renderer.clearColor.set(clearColor);
-		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	private Runnable doAfterTheRest;
+	private JDialog splashScreen;
+	private Window window;
+
+	public Core(String splashScreenTexPath) {
+		showSplashScreen(splashScreenTexPath);
+		initGLFW();
 	}
 	
-	public Core(String name){
-		this(name, Color.BLACK);
-	}
-	public Core(String name, Color clearColor){
-		this(name, clearColor, true);
-	}
-	public Core(String name, Color clearColor, boolean visible){
-		Window.createMaximized(name, true, visible);
-		Renderer.clearColor.set(clearColor);
-		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-	}
-	public Core(String name, Vec windowSize){
-		Window.create(name, windowSize.xInt(), windowSize.yInt(), true);
+	private void showSplashScreen(String filePath){
+		splashScreen = new JDialog();
+		splashScreen.setUndecorated(true);
+		splashScreen.add(new JLabel( new ImageIcon(filePath) ));
+		splashScreen.pack();
+		splashScreen.setLocationRelativeTo(null);
+		splashScreen.setVisible(true);
 	}
 	
-	double dt = 1000/60.0, lastTime, tickLength;
-	public int sleepTime, noSleepCounter;
+	public void init(Window window, Color clearColor){
+		this.window = window;
+		this.SIZE_HALF = window.SIZE_HALF;
+		this.SIZE = window.SIZE;
+		Renderer.init(clearColor, window.SIZE.w, window.SIZE.h);
+		Listener.connectToWindow(window);
+	}
 	
 	public void coreLoop(){
-		checkGLErrors(true, true, "after initialisation");
+		
+		if ( window == null ){
+			new IllegalStateException("No window defined").printStackTrace();
+			System.exit(1);
+		}
+		
+		if ( splashScreen != null ){
+			window.show();
+			splashScreen.setVisible(false);
+			splashScreen.dispose();
+		}
+		
 		Time.update(0);//this is used to get the time delta for moving objects
 		Time.start(1);
 		Time.update(1);
-		while(!(Display.isCloseRequested() || Window.closeRequested))
+		while(!(glfwWindowShouldClose(window.getHandle())  || WindowOld.closeRequested))//TODO remove double functionality for exiting
 		{
 
 			Time.update(1);
@@ -57,50 +70,57 @@ public class Core {
 			
 			Renderer.render();//RENDER SCENE
 			
+			//some other action can be performed after this cycle
 			if(doAfterTheRest != null){
 				doAfterTheRest.run();
 				doAfterTheRest = null;
 			}
 			
-			try {
-				int sleepTime = (int)(dt - (System.currentTimeMillis() - lastTime));
-				if(sleepTime > 0){
-					Thread.sleep(sleepTime);//wait until the cycle took enough time for 60 FPS
-					noSleepCounter = 0;
-				} else {
-					noSleepCounter++;
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			Display.update();//Update screen
+//			//get exactly 60 fps
+//			try {
+//				int sleepTime = (int)(dt - (System.currentTimeMillis() - lastTime));
+//				if(sleepTime > 0){
+//					Thread.sleep(sleepTime);//wait until the cycle took enough time for 60 FPS
+//					noSleepCounter = 0;
+//				} else {
+//					noSleepCounter++;
+//				}
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 
-			checkGLErrors(true, true, "at end of core loop");
-			
+			window.swapBuffers();// swap the color buffers
 		}
-		Window.destroy();
+		
+		//When the WHILE-loop has ended, exit the program
+		exit();
+	}
+	
+	//TODO add resource deletion
+	private void exit(){
+		
+		window.terminate();
+		
+		// Terminate GLFW and free the error callback
+		glfwTerminate();
+		glfwSetErrorCallback(null).free();
 		System.exit(0);
 	}
 	
-	public static boolean checkGLErrors(boolean exit, boolean print, String when){
-		int errorValue;
-		boolean foundSomething = false;
-		String out = "";
-		 while ((errorValue = GL11.glGetError()) != GL11.GL_NO_ERROR) {
-			 if(print){
-				 if(!foundSomething) out += "FOUND ERROR(S) " + when + ":";
-		         out += "\n   - " + GLU.gluErrorString(errorValue);
-			 }
-			 foundSomething = true;
-        }
-		 if(foundSomething && print){
-			 new Exception(out).printStackTrace();
-		 }
-		if(foundSomething && exit){
-			if (Display.isCreated()) Display.destroy();
-			System.exit(-1);
-		}
-		return foundSomething;
+	/**
+	 * Has to be called first, especially before the Window is created
+	 */
+	private static void initGLFW(){
+		// Setup an error callback. The default implementation
+		// will print the error message in System.err.
+		GLFWErrorCallback.createPrint(System.err).set();
+
+		// Initialize GLFW. Most GLFW functions will not work before doing this.
+		if ( !glfwInit() )
+			throw new IllegalStateException("Unable to initialize GLFW");
+	}
+	
+	public Window getWindow(){
+		return window;
 	}
 }

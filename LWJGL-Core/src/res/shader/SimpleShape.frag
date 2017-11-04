@@ -12,7 +12,7 @@ out vec4 out_Color;
 void main(void){
 
 	if(texture){
-		out_Color = texture2D(texture_diffuse, pass_texCoords)*color;
+		out_Color = texture(texture_diffuse, pass_texCoords)*color;
 	} else {
 		out_Color = color;
 	}

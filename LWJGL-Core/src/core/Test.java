@@ -4,36 +4,29 @@ import java.awt.Font;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ContextAttribs;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
 
-import render.Framebuffer;
-import render.Render;
-import render.Shader;
-import render.TexAtlas;
-import render.TexFile;
-import render.TexQuad;
-import render.Texture;
-import render.VAO;
-import render.VBO;
+import static org.lwjgl.glfw.GLFW.*;
+
+import render.*;
 import render.VBO.VAP;
-import util.Color;
-import util.TrueTypeFont;
+import util.*;
 import util.math.Vec;
 import util.shapes.Circle;
 
 public class Test implements Renderer {
-
+	static Core core;
 	public static void main(String[] args){
 		
-		Window.contextAttribs = new ContextAttribs(3, 3)
-		    .withForwardCompatible(true)
-		    .withProfileCore(true);
-		Window.createMaximized("OpenGL test", true);
-		Core core = new Core(Color.BLACK); System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
+		core = new Core("Witch.png");
+		core.init(new Window("OpenGL test", true, 1, 1, true,
+				GLFW_CONTEXT_VERSION_MAJOR, 3,
+				GLFW_CONTEXT_VERSION_MINOR, 3,
+				GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE,
+				GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE),
+				clearColor);
+		System.out.println("OpenGL version used: " + GL11.glGetString(GL11.GL_VERSION));
+		
 		Test main = new Test();
 		Renderer.renderers.add(main);
 		main.init();
@@ -79,8 +72,8 @@ public class Test implements Renderer {
 		vao = new VAO(null, vbo);
 		
 		circle = new Circle(new Vec(), 100, 50, Color.BLUE);
-		framebuffer = new Framebuffer("Frame", Window.WIDTH, Window.HEIGHT);
-		quad = Render.quadInScreen((short)-Window.WIDTH_HALF, (short)-Window.HEIGHT_HALF, (short)Window.WIDTH_HALF, (short)Window.HEIGHT_HALF);
+		framebuffer = new Framebuffer("Frame", core.SIZE.w, core.SIZE.h);
+		quad = Render.quadInScreen((short)-core.SIZE_HALF.w, (short)-core.SIZE_HALF.h, (short)core.SIZE_HALF.w, (short)core.SIZE_HALF.h);
 		
 		quad2 = new TexQuad(tex);
 	}
@@ -92,48 +85,47 @@ public class Test implements Renderer {
 
 	public void draw() {
 		
-//		shader.bind();
-//		tex.file.bind();
-//		shader.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
-//		shader.set("offset", 0, 0);
-//		shader.set("box", -50, -50, 50, 50);
-//		shader.set("texWH", tex.texCoords[2] - tex.texCoords[0], tex.texCoords[3] - tex.texCoords[1]);
-//		vao.bindStuff();
-//				GL11.glDrawArrays(GL11.GL_POINTS, 0, vertexCount);
-//		vao.unbindStuff();
-//		TexFile.bindNone();
-//		Shader.bindNone();
+		shader.bind();
+		tex.file.bind();
+		shader.set("scale", 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h);
+		shader.set("offset", 0, 0);
+		shader.set("box", -50, -50, 50, 50);
+		shader.set("texWH", tex.texCoords[2] - tex.texCoords[0], tex.texCoords[3] - tex.texCoords[1]);
+		vao.bindStuff();
+				GL11.glDrawArrays(GL11.GL_POINTS, 0, vertexCount);
+		vao.unbindStuff();
+		TexFile.bindNone();
+		Shader.bindNone();
 		
-//		//Render a single quad with a texture
-//		Render.drawSingleQuad(singleQuad, Color.GREEN, tex, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, true);
-//		
-//		//Render a String
-//		String test = "012345Test im Testingh)(&()()()(){} stuff. \n .-#?!)({}\n\nHuhu!!!!876543210";
-//		test = "0123456789";
-//		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, TrueTypeFont.ALIGN_CENTER);
+		//Render a single quad with a texture
+		Render.drawSingleQuad(singleQuad, Color.GREEN, tex, 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, true);
+		
+		//Render a String
+		String test = "012345Test im Testingh)(&()()()(){} stuff. \n .-#?!)({}\n\nHuhu!!!!876543210";
+		test = "4";
+		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, TrueTypeFont.ALIGN_CENTER);
 //		
 		//Render a circle shape to a framebuffer and then render the framebuffer to the screen
-//		framebuffer.bind();
-		circle.render(new Vec(500,500), 2);
-//		Framebuffer.bindNone();
-//		Render.drawSingleQuad(quad, Color.WHITE, framebuffer.getTex(), 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, true);
-//		
-//		//render a texQuad
-//		quad2.update(new Vec(100, 0), 0.5, 2, true);
-//		quad2.render(new Vec(), 0, new Vec(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF), Color.YELLOW);
+		framebuffer.bind();
+		circle.render(new Vec(500,500), new Vec(1.0/core.SIZE_HALF.w, 1.0/core.SIZE_HALF.h), 2);
+		Framebuffer.bindNone();
+		Render.drawSingleQuad(quad, Color.WHITE, framebuffer.getTex(), 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, true);
+		
+		//render a texQuad
+		quad2.update(new Vec(100, 0), 0.5, 2, true);
+		quad2.render(new Vec(), 0, new Vec(1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h), Color.YELLOW);
 	}
 	
 	public void after(){
 		GL20.glDisableVertexAttribArray(0);
 		
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
-		GL15.glDeleteBuffers(ibo);
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		GL15.glDeleteBuffers(vbo);
+		GL15.glDeleteBuffers(vbo.handle);
 		
 		GL30.glBindVertexArray(0);
-		GL30.glDeleteVertexArrays(vao);
+		GL30.glDeleteVertexArrays(vao.handle);
 	}
 
 	public String debugName() {

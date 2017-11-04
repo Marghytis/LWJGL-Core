@@ -1,31 +1,33 @@
 package render;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
 
-import util.PNGDecoder;
+import util.Util;
+import util.math.*;
 
 public class TexFile {
 
 	public static TexFile emptyTex = new TexFile("/res/EmptyTex.png", true);
 	static TexFile boundFile = emptyTex;
 
+	ByteBuffer data;
 	public String path;
 	public int handle;
 	public int width, height;
 	
 	public TexFile(String path, boolean internal){
 		this.path = path;
-		if(internal){
-			createGL(readInternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
-		} else {
-			createGL(readExternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
-		}
+		IntVec size = new IntVec();
+		createGL(Util.readFile(path, internal, size), size, GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+//		if(internal){
+//			createGL(readInternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+//		} else {
+//			createGL(readExternalFile(path), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+//		}
+		this.width = size.w;
+		this.height = size.h;
 	}
 	
 	public TexFile(String path){
@@ -40,7 +42,7 @@ public class TexFile {
 	public TexFile(String name, int width, int height){
 		this.width = width;
 		this.height = height;
-		createGL(null, GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
+		createGL(null, new IntVec(width, height), GL11.GL_RGBA, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE);
 	}
 	
 	/**
@@ -50,7 +52,8 @@ public class TexFile {
 	 * @param internalFormat Internal format of the texture (usually GL11.GL_RGBA8)
 	 * @param dataType Data type of each information (GL11.GL_UNSIGNED_BYTE usually) 
 	 */
-	private void createGL(ByteBuffer data, int format, int internalFormat, int dataType){
+	private void createGL(ByteBuffer data, IntVec size, int format, int internalFormat, int dataType){
+		this.data = data;
 		// Create a new texture object in memory and bind it
 		this.handle = GL11.glGenTextures();
 		
@@ -58,47 +61,48 @@ public class TexFile {
 		// All RGB bytes are aligned to each other and each component is 1 byte
 		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 		// Upload the texture data and generate mip maps (for scaling)
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, dataType, data);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, size.w, size.h, 0, format, dataType, data);
 		// Setup what to do when the texture has to be scaled
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST); 
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 	}
 	
-	public ByteBuffer readExternalFile(String path){
-		try {
-			return readFile(new FileInputStream(path));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+//	public ByteBuffer readExternalFile(String path){
+//		try {
+//			return readFile(new FileInputStream(path));
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//	}
 	
-	public ByteBuffer readInternalFile(String path){
-		return readFile(TexFile.class.getResourceAsStream(path));
-	}
+//	public ByteBuffer readInternalFile(String path){
+//		return readFile(TexFile.class.getResourceAsStream(path));
+//	}
 	
-	private ByteBuffer readFile(InputStream in){
-		// Open the PNG file as an InputStream
-		try {
-			// Link the PNG decoder to this stream
-			PNGDecoder decoder = new PNGDecoder(in);
-			
-			// Get the width and height of the texture
-			this.width = decoder.getWidth();
-			this.height = decoder.getHeight();
-			
-			// Decode the PNG file in a ByteBuffer
-			ByteBuffer data = ByteBuffer.allocateDirect(4 * width * height);
-			decoder.decode(data, decoder.getWidth() * 4, PNGDecoder.RGBA);
-			data.flip();
-			
-			in.close();
-			return data;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	private ByteBuffer readFile(InputStream in){
+//		if(in == null) return null;
+//		// Open the PNG file as an InputStream
+//		try {
+//			// Link the PNG decoder to this stream
+//			PNGDecoder decoder = new PNGDecoder(in);
+//			
+//			// Get the width and height of the texture
+//			this.width = decoder.getWidth();
+//			this.height = decoder.getHeight();
+//			
+//			// Decode the PNG file in a ByteBuffer
+//			ByteBuffer data = ByteBuffer.allocateDirect(4 * width * height);
+//			decoder.decode(data, decoder.getWidth() * 4, PNGDecoder.RGBA);
+//			data.flip();
+//			
+//			in.close();
+//			return data;
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Binds this texture file if its not yet bound
@@ -117,5 +121,9 @@ public class TexFile {
 	
 	public static TexFile boundOne(){
 		return boundFile;
+	}
+	
+	public ByteBuffer getData(){
+		return data;
 	}
 }
