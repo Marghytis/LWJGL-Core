@@ -219,10 +219,21 @@ public class TrueTypeFont {
 		return fontHeight;
 	}
 
-	public void drawString(float x, float y, String whatchars, float scaleX, float scaleY){drawString(x, y, whatchars, Color.WHITE, 1, 1, scaleX, scaleY);}
-	public void drawString(float x, float y, String whatchars, float sizeX, float sizeY, float scaleX, float scaleY){drawString(x, y, whatchars, Color.WHITE, sizeX, sizeY, scaleX, scaleY);}
-	public void drawString(float x, float y, String whatchars, Color color, float sizeX, float sizeY, float scaleX, float scaleY) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, sizeX, sizeY, scaleX, scaleY, ALIGN_LEFT);}
-	public void drawString(float x, float y, String whatchars, Color color, float sizeX, float sizeY, float scaleX, float scaleY, int format) {drawString(x,y,whatchars, color, 0, whatchars.length()-1, sizeX, sizeY, scaleX, scaleY, format);}
+	public void drawString(float x, float y, String whatchars, float scaleX, float scaleY){
+		drawString(x, y, whatchars, Color.WHITE, 1, 1, scaleX, scaleY);}
+	
+	public void drawString(float x, float y, String whatchars, float sizeX, float sizeY, float scaleX, float scaleY){
+		drawString(x, y, whatchars, Color.WHITE, sizeX, sizeY, scaleX, scaleY);}
+	
+	public void drawString(float x, float y, String whatchars, Color color, float scaleX, float scaleY) {
+		drawString(x,y,whatchars, color, 0, whatchars.length()-1, 1, 1, scaleX, scaleY, ALIGN_LEFT);}
+	
+	public void drawString(float x, float y, String whatchars, Color color, float sizeX, float sizeY, float scaleX, float scaleY) {
+		drawString(x,y,whatchars, color, 0, whatchars.length()-1, sizeX, sizeY, scaleX, scaleY, ALIGN_LEFT);}
+	
+	public void drawString(float x, float y, String whatchars, Color color, float sizeX, float sizeY, float scaleX, float scaleY, int format) {
+		drawString(x,y,whatchars, color, 0, whatchars.length()-1, sizeX, sizeY, scaleX, scaleY, format);}
+	
 	public void drawString(float x, float y, String whatchars, Color color, int startIndex, int endIndex, float sizeX, float sizeY, float scaleX, float scaleY, int format) {
 		
 		char[] chars = whatchars.toCharArray();

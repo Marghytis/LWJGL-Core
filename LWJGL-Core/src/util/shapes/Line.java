@@ -3,12 +3,9 @@ package util.shapes;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.*;
 
-import core.WindowOld;
-import render.Shader;
-import render.VBO;
+import render.*;
 import render.VBO.VAP;
 import util.Color;
 import util.math.Vec;
@@ -28,11 +25,11 @@ public class Line extends Shape {
 		this.color = color;
 	}
 
-	public void render(Vec offset, float size) {
+	public void render(Vec offset, Vec scale, float size) {
 		Shader.line.bind();
 		bindStuff();
 
-		Shader.line.set("scale", size/WindowOld.WIDTH_HALF, size/WindowOld.HEIGHT_HALF);
+		Shader.line.set("scale", size*(float)scale.x, size*(float)scale.y);
 		Shader.line.set("offset", (float)offset.x, (float)offset.y);
 		Shader.line.set("color", color);
 		GL11.glDrawArrays(GL11.GL_LINE_STRIP, 0, length);

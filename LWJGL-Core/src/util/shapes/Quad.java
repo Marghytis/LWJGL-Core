@@ -3,13 +3,9 @@ package util.shapes;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.*;
 
-import core.WindowOld;
-import render.Render;
-import render.Shader;
-import render.VBO;
+import render.*;
 import render.VBO.VAP;
 import util.Color;
 import util.math.Vec;
@@ -23,16 +19,18 @@ public class Quad extends Shape {
 		this.color = color;
 	}
 
-	public void render(Vec offset, float size){
-		this.render(offset, 0, size);
+	public void render(Vec offset, Vec scale, float size){
+		this.render(offset, scale, 0, size);
 	}
-	public void render(Vec offset, double z, float size) {
+	public void render(Vec offset, Vec scale, double z, float size) {
 		Shader.simpleShape.bind();
 		bindStuff();
 
-		Shader.simpleShape.set("scale", size/WindowOld.WIDTH_HALF, size/WindowOld.HEIGHT_HALF);
+		Shader.simpleShape.set("size", size);
+		Shader.simpleShape.set("scale", (float)scale.x, (float)scale.y);
 		Shader.simpleShape.set("offset", (float)offset.x, (float)offset.y, (float)z);
 		Shader.simpleShape.set("color", color);
+		Shader.simpleShape.set("texture", false);
 		
 		GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
 		

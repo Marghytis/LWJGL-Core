@@ -16,7 +16,7 @@ public interface Renderer {
 	
 	public static void render(){
 		//reset OpenGL
-		if(CoreOld.clear) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		//forward the render call to all renderers
 		for(Renderer r : renderers){

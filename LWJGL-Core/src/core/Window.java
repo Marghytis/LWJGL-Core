@@ -11,6 +11,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import core.Listener.PollData;
 import util.Util;
 import util.math.IntVec;
 
@@ -80,8 +81,14 @@ public class Window {
 
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
-		// Enable v-sync
-		glfwSwapInterval(1);
+//		// Enable v-sync
+//		glfwSwapInterval(1);
+		
+		Listener.pollData.put(window, new PollData(SIZE.h));
+	}
+	
+	public void requestClose(){
+		glfwSetWindowShouldClose(window, true);
 	}
 	
 	public void setSize(int width, int height){

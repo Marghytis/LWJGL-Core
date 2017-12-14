@@ -12,8 +12,30 @@ public interface Listener {
 
 	public static List<Listener> listeners = new ArrayList<>();
 	
-	public static Vec mousePos = new Vec();
-	static Vec[] buttonsPressed = {new Vec(), new Vec(), new Vec()};
+	static Hashtable<Long, PollData> pollData = new Hashtable<>();
+	static class PollData {
+		public Vec mousePos = new Vec();
+		public Vec[] buttonsPressed = {new Vec(), new Vec(), new Vec()};
+		public double scrollOffset;
+		private int windowHeight;
+		
+		public PollData(int windowHeight){
+			this.windowHeight = windowHeight;
+		}
+		
+		public void setMousePos(double x, double y){
+			this.mousePos.set(x, windowHeight - y);
+		}
+	}
+	
+	//characters
+	static GLFWCharCallbackI ch =
+			(long window, int ch) -> {
+				for(Listener l : listeners){
+					l.charTyped((char)ch);
+				}
+			};
+			
 
 	//Keyboard
 	static GLFWKeyCallbackI key =
@@ -36,7 +58,7 @@ public interface Listener {
 	//Cursor position
 	static GLFWCursorPosCallbackI cursorPos = 
 			(long window, double xpos, double ypos) -> {
-				mousePos.set(xpos, ypos);
+				pollData.get(window).setMousePos(xpos, ypos);
 			};
 	
 	//Mouse
@@ -46,16 +68,22 @@ public interface Listener {
 					if(action == GLFW.GLFW_PRESS){
 						//MOUSE PRESSED
 						for(Listener l : listeners){
-							if(l.mousePressed(button, mousePos)) break;
+							if(l.pressed(button, pollData.get(window).mousePos)) break;
 						}
-						buttonsPressed[button].set(mousePos);
+						pollData.get(window).buttonsPressed[button].set(pollData.get(window).mousePos);
 					} else {
 						//MOUSE RELEASED
 						for(Listener l : listeners){
-							if(l.mouseReleased(button, mousePos, mousePos.minus(buttonsPressed[button]))) break;
+							if(l.released(button, pollData.get(window).mousePos, pollData.get(window).mousePos.minus(pollData.get(window).buttonsPressed[button]))) break;
 						}
 					}
 				}
+			};
+		
+	//Scrolling
+	static GLFWScrollCallbackI scroll = 
+			(long window, double dx, double dy) -> {
+				pollData.get(window).scrollOffset += dy;
 			};
 			
 	public static void listen(){
@@ -64,14 +92,29 @@ public interface Listener {
 		glfwPollEvents();
 	}
 	
+	public static Vec getMousePos(long window){
+		return pollData.get(window).mousePos.copy();
+	}
+	
+	public static int getDWheel(long window){
+		int out = (int)pollData.get(window).scrollOffset;
+		pollData.get(window).scrollOffset = 0;
+		return out;
+	}
+	
+	public static boolean isKeyDown(long window, int key){
+		return glfwGetKey(window, key) == GLFW_PRESS;
+	}
+	
 	public static void connectToWindow(Window window){
 		glfwSetKeyCallback(window.getHandle(), key);
 		glfwSetCursorPosCallback(window.getHandle(), cursorPos);
 		glfwSetMouseButtonCallback(window.getHandle(), mouseButton);
 	}
 
-	public boolean mousePressed(int button, Vec mousePos);
-	public boolean mouseReleased(int button, Vec mousePos, Vec mouseDelta);
+	public boolean pressed(int button, Vec mousePos);
+	public boolean released(int button, Vec mousePos, Vec mouseDelta);
 	public boolean keyPressed(int key);
 	public boolean keyReleased(int key);
+	public boolean charTyped(char ch);
 }

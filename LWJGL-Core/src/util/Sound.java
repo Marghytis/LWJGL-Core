@@ -120,8 +120,8 @@ public class Sound {
 	    AL10.alSourcei(source, AL10.AL_BUFFER,   buffer );
 	    AL10.alSourcef(source, AL10.AL_PITCH,    1.0f          );
 	    AL10.alSourcef(source, AL10.AL_GAIN,     1.0f          );
-	    AL10.alSource (source, AL10.AL_POSITION, sourcePos     );
-	    AL10.alSource (source, AL10.AL_VELOCITY, sourceVel     );
+	    AL10.alSourcefv(source, AL10.AL_POSITION, sourcePos     );
+	    AL10.alSourcefv(source, AL10.AL_VELOCITY, sourceVel     );
 
 	    // Do another error check and return.
 	    if(AL10.alGetError() == AL10.AL_NO_ERROR)

@@ -5,11 +5,10 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
-import core.WindowOld;
 import render.*;
 import render.VBO.VAP;
 import util.Color;
-import util.math.*;
+import util.math.Vec;
 
 public class Circle extends Shape {
 

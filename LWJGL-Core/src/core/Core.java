@@ -9,7 +9,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import util.*;
 import util.math.IntVec;
 
-public class Core extends CoreOld {
+public class Core {
 
 	public IntVec SIZE_HALF, SIZE;
 	private double dt = 1000/60.0, lastTime, tickLength;
@@ -57,7 +57,7 @@ public class Core extends CoreOld {
 		Time.update(0);//this is used to get the time delta for moving objects
 		Time.start(1);
 		Time.update(1);
-		while(!(glfwWindowShouldClose(window.getHandle())  || WindowOld.closeRequested))//TODO remove double functionality for exiting
+		while(!(glfwWindowShouldClose(window.getHandle())))//TODO remove double functionality for exiting
 		{
 
 			Time.update(1);
@@ -76,24 +76,28 @@ public class Core extends CoreOld {
 				doAfterTheRest = null;
 			}
 			
-//			//get exactly 60 fps
-//			try {
-//				int sleepTime = (int)(dt - (System.currentTimeMillis() - lastTime));
-//				if(sleepTime > 0){
-//					Thread.sleep(sleepTime);//wait until the cycle took enough time for 60 FPS
-//					noSleepCounter = 0;
-//				} else {
-//					noSleepCounter++;
-//				}
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
+			//get exactly 60 fps
+			try {
+				int sleepTime = (int)(dt - (System.currentTimeMillis() - lastTime));
+				if(sleepTime > 0){
+					Thread.sleep(sleepTime);//wait until the cycle took enough time for 60 FPS
+					noSleepCounter = 0;
+				} else {
+					noSleepCounter++;
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
 			window.swapBuffers();// swap the color buffers
 		}
 		
 		//When the WHILE-loop has ended, exit the program
 		exit();
+	}
+	
+	public void doAfterTheRest(Runnable run){
+		this.doAfterTheRest = run;
 	}
 	
 	//TODO add resource deletion
