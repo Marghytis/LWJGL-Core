@@ -11,6 +11,7 @@ import util.math.IntVec;
 
 public class Core {
 
+<<<<<<< Upstream, based on origin/LWJGL3
 	public IntVec SIZE_HALF, SIZE;
 	private double dt = 1000/60.0, lastTime, tickLength;
 	private int sleepTime, noSleepCounter;
@@ -22,6 +23,20 @@ public class Core {
 	public Core(String splashScreenTexPath) {
 		showSplashScreen(splashScreenTexPath);
 		initGLFW();
+=======
+	public Runnable doAfterTheRest;
+	
+	public Core(String name){
+		this(name, Color.BLACK);
+	}
+	public Core(String name, Color clearColor){
+		Window.createMaximized(name, true);
+		Renderer.clearColor.set(clearColor);
+		GL11.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	}
+	public Core(String name, Vec windowSize){
+		Window.create(name, windowSize.xInt(), windowSize.yInt(), true);
+>>>>>>> 0f67b29 Added a configuration class
 	}
 	
 	private void showSplashScreen(String filePath){
