@@ -4,8 +4,6 @@ import java.util.*;
 
 import org.lwjgl.opengl.*;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import util.Color;
 
 public interface Renderer {
@@ -16,13 +14,8 @@ public interface Renderer {
 	
 	public static void render(){
 		//reset OpenGL
-<<<<<<< Upstream, based on origin/LWJGL3
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		//forward the render call to all renderers
-=======
 		if(Configuration.clear) GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
->>>>>>> 0f67b29 Added a configuration class
+		//forward the render call to all renderers
 		for(Renderer r : renderers){
 			r.draw();
 		}
