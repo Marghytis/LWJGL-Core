@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL32;
 import util.Color;
 
 public class Shader {
-	/**UNIFORMS: offset: vec2, scale: vec2, texCoords: vec4, color: vec4, texture: bool, z: float*/
+	/**UNIFORMS: offset: vec2, scale: vec2, texCoords: vec4, color: vec4, textured: bool, z: float*/
 	public static Shader singleQuad = Shader.internalFiles("/res/shader/singleQuad.vert", "/res/shader/singleQuad.frag", "in_Position", "in_TexCoords");
 	/**UNIFORMS: scale: vec2, stuff=(height, zero, xOffset): vec3, colorHigh: vec4, colorLow: vec4*/
 	public static Shader graph = Shader.internalFiles("/res/shader/graph.vert", "/res/shader/graph.frag", "in_X", "in_Value");

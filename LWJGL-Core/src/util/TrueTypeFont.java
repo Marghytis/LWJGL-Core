@@ -34,6 +34,8 @@ public class TrueTypeFont {
 	private CharData[] charArray = new CharData[256];
 	/** Map of user defined font characters (Character <-> CharData) */
 	private Map<Character, CharData> customChars = new HashMap<>();
+	
+	private int totalCharCount;
 	/** Boolean flag on whether AntiAliasing is enabled or not */
 	private boolean antiAlias;
 	/** Font's size */
@@ -76,10 +78,9 @@ public class TrueTypeFont {
 			textureWidth *= 2;
 		}
 		
-		// In any case this should be done in other way. Texture with size 512x512
+		// In any case this should be done in another way. Texture with size 512x512
 		// can maintain only 256 characters with resolution of 32x32. The texture
 		// size should be calculated dynamicaly by looking at character sizes. 
-		
 		try {
 			
 			BufferedImage imgTemp = new BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB);
@@ -93,6 +94,7 @@ public class TrueTypeFont {
 			int positionY = 0;
 			
 			int customCharsLength = ( customCharsArray != null ) ? customCharsArray.length : 0; 
+			totalCharCount = 256 + customCharsLength;
 
 			for (int i = 0; i < 256 + customCharsLength; i++) {
 				
@@ -241,22 +243,22 @@ public class TrueTypeFont {
 		int currentChar;
 
 		float startX = 0;
-		int i = startIndex, dir, correction;
+		int dir, correction;
 		float startY = 0;
 		switch (format) {
 			case ALIGN_RIGHT: {
 				dir = -1;
 				correction = correctR;
 			
-				while (i < endIndex) {
+				for(int i = startIndex; i <= endIndex; i++) {
 					if(chars[i] == '\n') startY -= fontHeight;
-					i++;
 				}
 				break;
 			}
 			case ALIGN_CENTER: {
-				for (int l = startIndex; l <= endIndex; l++) {
-					currentChar = chars[l];
+				dir = 1;
+				for (int i = startIndex; i <= endIndex; i++) {
+					currentChar = chars[i];
 					if (currentChar == '\n') break;
 					charData = getChar(currentChar);
 					startX += charData.width-correctL;
@@ -272,16 +274,15 @@ public class TrueTypeFont {
 		}
 
 		int charCount = endIndex - startIndex + 1;
-		for(int j = startIndex; j <= endIndex; j++){
-			if(chars[j] == '\n'){
+		for(int i = startIndex; i <= endIndex; i++){
+			if(chars[i] == '\n'){
 				charCount--;
 			}}
 		
-		char[] indicesChars = whatchars.toCharArray();
 		ShortBuffer indices = BufferUtils.createShortBuffer(charCount*6);
-		for(int j = i; j <= endIndex && j >= startIndex; j+=dir){
-			if(chars[j] == '\n')continue;
-			short index = (short)(indicesChars[j]*4);
+		for(int i = (format == ALIGN_RIGHT ? endIndex : startIndex); i <= endIndex && i >= startIndex; i+=dir){
+			if(chars[i] == '\n')continue;
+			short index = (short)(chars[i]*4);
 			indices.put(index);
 			indices.put((short)(index + 1));
 			indices.put((short)(index + 2));
@@ -296,7 +297,8 @@ public class TrueTypeFont {
 
 		int X = (int)startX;
 		int Y = (int)startY;
-		while (i >= startIndex && i <= endIndex) {
+		
+		for(int i = (format == ALIGN_RIGHT ? endIndex : startIndex); i <= endIndex && i >= startIndex; i+=dir){
 			
 			currentChar = chars[i];
 			charData = getChar(currentChar);
@@ -307,8 +309,8 @@ public class TrueTypeFont {
 					Y -= fontHeight * dir;
 					X = 0;
 					if(format == ALIGN_CENTER) {
-						for (int l = i+1; l <= endIndex; l++) {
-							currentChar = chars[l];
+						for (int j = i+1; j <= endIndex; j++) {
+							currentChar = chars[j];
 							if (currentChar == '\n') break;
 							if (currentChar < 256) {
 								charData = charArray[currentChar];
@@ -322,10 +324,9 @@ public class TrueTypeFont {
 					
 				} else {
 					offsets.put((int)(X * sizeX + x));
-					offsets.put((int)(Y * scaleY + y));
+					offsets.put((int)(Y * sizeY + y));
 					if (dir > 0) X += (charData.width-correction) * dir ;
 				}
-				i += dir;
 			}
 		}
 		offsets.flip();
@@ -342,7 +343,7 @@ public class TrueTypeFont {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTextureID);
 		
 		vao.bindStuff();
-			GL11.glDrawElements(GL11.GL_TRIANGLES, indices.capacity(), GL11.GL_UNSIGNED_SHORT, 0);
+			GL11.glDrawElements(GL11.GL_TRIANGLES, totalCharCount*6, GL11.GL_UNSIGNED_SHORT, 0);
 		vao.unbindStuff();
 		
 		TexFile.bindNone();

@@ -101,8 +101,8 @@ public class Test implements Renderer {
 		Render.drawSingleQuad(singleQuad, Color.GREEN, tex, 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, true);
 		
 		//Render a String
-		String test = "012345Test im Testingh)(&()()()(){} stuff. \n .-#?!)({}\n\nHuhu!!!!876543210";
-		test = "4";
+		String test = "012345Test I'm \nTesting  h)(&\n()()()\n(){} st";
+//		test = "4";
 		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, TrueTypeFont.ALIGN_CENTER);
 //		
 		//Render a circle shape to a framebuffer and then render the framebuffer to the screen

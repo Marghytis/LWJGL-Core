@@ -93,7 +93,7 @@ public class Render {
 			Shader.singleQuad.set("color", color.r, color.g, color.b, color.a);
 		else
 			Shader.singleQuad.set("color", 1, 1, 1, 1);
-		Shader.singleQuad.set("texture", texture);
+		Shader.singleQuad.set("textured", texture);
 		vao.bindStuff();
 			GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
 		vao.unbindStuff();
