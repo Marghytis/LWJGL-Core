@@ -74,8 +74,12 @@ public class Window {
 				image.free();
 			}
 		}
+		if(image != null) {
+			glfwSetWindowIcon(window, imagebf);
+		} else {
+			new Exception("Icons not found!").printStackTrace();
+		}
         imagebf.flip();
-		glfwSetWindowIcon(window, imagebf);
 		imagebf.free();
 		
 
