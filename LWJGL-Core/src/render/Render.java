@@ -13,6 +13,7 @@ import render.VBO.VAP;
 import util.Color;
 
 public class Render {
+	public static float scaleX = 1, scaleY = 1, offsetX = 0, offsetY = 0;
 	
 	public static ByteBuffer standardIndex = BufferUtils.createByteBuffer(6);
 	static {standardIndex.put(new byte[]{0, 1, 2, 0, 2, 3}); standardIndex.flip();}
