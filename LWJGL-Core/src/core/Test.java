@@ -55,8 +55,34 @@ public class Test implements Renderer, Listener {
 	public int vertexCount, indexCount;
 	
 	VAO singleQuad = Render.quadInScreen((short)(-500), (short)(-500), (short)(500), (short)(500));
+	MultiSoundSource soundPlayer;
 	
 	public void init(){
+		Sound coin = new Sound("res/coins_quick_movement_in_hand.ogg");
+		MultiSoundSource soundPlayer = new MultiSoundSource(10);
+		SoundSource soundPlayer1 = new SoundSource();
+		soundPlayer1.loadSound(coin);
+		soundPlayer.loadSound(coin);
+		soundPlayer1.play();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		soundPlayer1.play();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		soundPlayer.play();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		soundPlayer.play();
+		
 		vertexCount = 1;
 		ByteBuffer buffer = BufferUtils.createByteBuffer(vertexCount*12*Float.BYTES);
 		for(int k = 0; k < vertices.length; k++){

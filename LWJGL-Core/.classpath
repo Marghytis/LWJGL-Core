@@ -2,26 +2,29 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="lwjgl.jar">
+	<classpathentry kind="lib" path="LWJGL 3.2/lwjgl/lwjgl.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/LWJGL-Core/lwjgl-javadoc.jar!/"/>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/natives"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL 3.2/natives"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lwjgl-opengl.jar">
+	<classpathentry kind="lib" path="LWJGL 3.2/lwjgl-glfw/lwjgl-glfw.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/natives"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL 3.2/natives"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lwjgl-glfw.jar" sourcepath="lwjgl-glfw-sources.jar">
+	<classpathentry kind="lib" path="LWJGL 3.2/lwjgl-openal/lwjgl-openal.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/LWJGL-Core/lwjgl-glfw-javadoc.jar!/"/>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/natives"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL 3.2/natives"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lwjgl-openal.jar">
+	<classpathentry kind="lib" path="LWJGL 3.2/lwjgl-opengl/lwjgl-opengl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/natives"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL 3.2/natives"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="LWJGL 3.2/lwjgl-stb/lwjgl-stb.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL 3.2/natives"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
