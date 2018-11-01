@@ -3,7 +3,6 @@ package util;
 import java.io.*;
 import java.nio.ByteBuffer;
 
-import render.TexFile;
 import util.math.IntVec;
 
 public class Util {
@@ -11,7 +10,7 @@ public class Util {
 	public static ByteBuffer readFile(String path, boolean internal, IntVec size){
 		InputStream in = null;
 		if ( internal ){
-			in = TexFile.class.getResourceAsStream(path);
+			in = Util.class.getResourceAsStream(path);
 		} else try {
 			in = new FileInputStream(path);
 		} catch(IOException e){

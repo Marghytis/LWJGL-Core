@@ -279,10 +279,11 @@ public class TrueTypeFont {
 				charCount--;
 			}}
 		
-		ShortBuffer indices = BufferUtils.createShortBuffer(charCount*6);
+		ShortBuffer indices = BufferUtils.createShortBuffer(maxChars*6);
+		indices.clear();
 		for(int i = (format == ALIGN_RIGHT ? endIndex : startIndex); i <= endIndex && i >= startIndex; i+=dir){
 			if(chars[i] == '\n')continue;
-			short index = (short)(chars[i]*4);
+			short index = (short)((chars[i])*4);
 			indices.put(index);
 			indices.put((short)(index + 1));
 			indices.put((short)(index + 2));
@@ -290,6 +291,9 @@ public class TrueTypeFont {
 			indices.put(index);
 			indices.put((short)(index + 2));
 			indices.put((short)(index + 3));
+		}
+		for(int i = charCount*6; i < maxChars*6; i++) {
+			indices.put((short)0);
 		}
 		indices.flip();
 		
@@ -343,7 +347,7 @@ public class TrueTypeFont {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTextureID);
 		
 		vao.bindStuff();
-			GL11.glDrawElements(GL11.GL_TRIANGLES, totalCharCount*6, GL11.GL_UNSIGNED_SHORT, 0);
+			GL11.glDrawElements(GL11.GL_TRIANGLES, maxChars*2, GL11.GL_UNSIGNED_SHORT, 0);
 		vao.unbindStuff();
 		
 		TexFile.bindNone();

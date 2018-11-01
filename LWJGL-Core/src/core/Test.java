@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.*;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -14,7 +15,7 @@ import util.*;
 import util.math.Vec;
 import util.shapes.Circle;
 
-public class Test implements Renderer {
+public class Test implements Renderer, Listener {
 	static Core core;
 	public static void main(String[] args){
 		
@@ -29,6 +30,7 @@ public class Test implements Renderer {
 		
 		Test main = new Test();
 		Renderer.renderers.add(main);
+		Listener.listeners.add(main);
 		main.init();
 		core.coreLoop();
 	}
@@ -83,6 +85,17 @@ public class Test implements Renderer {
 	VAO quad;
 	TexQuad quad2;
 
+	String text = "Test, huhu";
+	boolean switched = false;
+
+	void switchText() {
+		if(!switched) {
+			text = "sdfasdfgafedgaervertverte";
+		} else {
+			text = "239939e8u";
+		}
+		switched = !switched;
+	}
 	public void draw() {
 		
 		shader.bind();
@@ -101,9 +114,9 @@ public class Test implements Renderer {
 		Render.drawSingleQuad(singleQuad, Color.GREEN, tex, 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, true);
 		
 		//Render a String
-		String test = "012345Test I'm \nTesting  h)(&\n()()()\n(){} st";
+//		String test = "012345Test I'm \nTesting  h)(&\n()()()\n(){} st";
 //		test = "4";
-		font.drawString(0, 0, test, Color.GREEN, 0, test.length()-1, 1, 1, 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, TrueTypeFont.ALIGN_CENTER);
+		font.drawString(0, 0, text, Color.GREEN, 0, text.length()-1, 1, 1, 1f/core.SIZE_HALF.w, 1f/core.SIZE_HALF.h, TrueTypeFont.ALIGN_CENTER);
 //		
 		//Render a circle shape to a framebuffer and then render the framebuffer to the screen
 		framebuffer.bind();
@@ -130,5 +143,36 @@ public class Test implements Renderer {
 
 	public String debugName() {
 		return "LWJGL-Core-Tester";
+	}
+
+	@Override
+	public boolean pressed(int button, Vec mousePos) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean released(int button, Vec mousePos, Vec mouseDelta) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean keyPressed(int key) {
+		switch(key) {
+		case GLFW.GLFW_KEY_A : switchText(); break;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
