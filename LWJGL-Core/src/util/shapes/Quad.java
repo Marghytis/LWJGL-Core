@@ -30,7 +30,7 @@ public class Quad extends Shape {
 		Shader.simpleShape.set("scale", (float)scale.x, (float)scale.y);
 		Shader.simpleShape.set("offset", (float)offset.x, (float)offset.y, (float)z);
 		Shader.simpleShape.set("color", color);
-		Shader.simpleShape.set("texture", false);
+		Shader.simpleShape.set("textured", false);
 		
 		GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
 		

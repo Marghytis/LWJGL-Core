@@ -66,7 +66,7 @@ public class Window {
 		GLFWImage image = null;
 		GLFWImage.Buffer imagebf = GLFWImage.malloc(3);
 		for(int i = 0, size = 64; i < 3; i++, size /= 2){
-			icon = Util.readFile("/res/icons/Icon" + size + ".png", iconsInternal, sizeVector);
+			icon = Util.readFile((iconsInternal ? "/" : "") + "res/icons/Icon" + size + ".png", iconsInternal, sizeVector);
 			if(icon != null){
 				image = GLFWImage.malloc();
 				image.set(sizeVector.w, sizeVector.h, icon);

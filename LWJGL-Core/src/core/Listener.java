@@ -96,8 +96,8 @@ public interface Listener {
 		return pollData.get(window).mousePos.copy();
 	}
 	
-	public static int getDWheel(long window){
-		int out = (int)pollData.get(window).scrollOffset;
+	public static double getDWheel(long window){
+		double out = (int)pollData.get(window).scrollOffset;
 		pollData.get(window).scrollOffset = 0;
 		return out;
 	}
@@ -110,6 +110,7 @@ public interface Listener {
 		glfwSetKeyCallback(window.getHandle(), key);
 		glfwSetCursorPosCallback(window.getHandle(), cursorPos);
 		glfwSetMouseButtonCallback(window.getHandle(), mouseButton);
+		glfwSetScrollCallback(window.getHandle(), scroll);
 	}
 
 	public boolean pressed(int button, Vec mousePos);

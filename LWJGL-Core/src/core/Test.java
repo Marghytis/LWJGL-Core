@@ -61,7 +61,9 @@ public class Test implements Renderer, Listener {
 		Sound coin = new Sound("res/coins_quick_movement_in_hand.ogg");
 		MultiSoundSource soundPlayer = new MultiSoundSource(10);
 		SoundSource soundPlayer1 = new SoundSource();
+		SoundSource soundPlayer2 = new SoundSource();
 		soundPlayer1.loadSound(coin);
+		soundPlayer2.loadSound(coin, true);
 		soundPlayer.loadSound(coin);
 		soundPlayer1.play();
 		try {
@@ -82,6 +84,12 @@ public class Test implements Renderer, Listener {
 			e.printStackTrace();
 		}
 		soundPlayer.play();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		soundPlayer2.play();
 		
 		vertexCount = 1;
 		ByteBuffer buffer = BufferUtils.createByteBuffer(vertexCount*12*Float.BYTES);

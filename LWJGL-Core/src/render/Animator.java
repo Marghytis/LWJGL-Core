@@ -11,7 +11,7 @@ public class Animator {
 	 * Has to be set every time the Texture is used (if it's needed)
 	 */
 	public Runnable endTask;
-	public boolean instantSwitch;
+	public boolean instantSwitch, finished, repeat;
 	
 	public Animator(){
 		setTexture(Texture.emptyTexture);
@@ -20,12 +20,17 @@ public class Animator {
 	public Animator(Texture tex){
 		setTexture(tex);
 	}
-	
+
 	public Animator(Animation ani) {
-		setAnimation(ani);
+		this(ani, null, true);
+	}
+	public Animator(Animation ani, Runnable endTask, boolean repeat) {
+		setAnimation(ani, endTask, repeat);
 	}
 	
 	public void update(double delta){
+		if(finished && !repeat)
+			return;
 		if(instantSwitch){
 			executeTask();
 		} else {
@@ -35,7 +40,12 @@ public class Animator {
 				deltaT %= ani.frameTime;
 				
 				if(pos >= ani.indices.length){
-					pos %= ani.indices.length;
+					if(!repeat) {
+						finished = true;
+						pos = ani.indices.length-1;
+					} else {
+						pos %= ani.indices.length;
+					}
 				}
 				
 				if(pos >= ani.taskTime){
@@ -53,7 +63,7 @@ public class Animator {
 		quad.updateTex(tex);
 	}
 	
-	public void setAnimation(Animation ani, Runnable endTask){
+	public void setAnimation(Animation ani, Runnable endTask, boolean repeat){
 		if(ani != this.ani){
 			
 			lastTex = this.tex;
@@ -64,12 +74,17 @@ public class Animator {
 			this.ani = ani;
 			setTex(ani.atlas.texs[ani.indices[pos]]);
 			this.endTask = endTask;
+			this.repeat = repeat;
+			this.finished = false;
 			if(ani.frameTime == -1){
 				instantSwitch = true;
 			} else {
 				instantSwitch = false;
 			}
 		}
+	}
+	public void setAnimation(Animation ani, Runnable endTask){
+		setAnimation(ani, endTask, true);
 	}
 	public void setAnimation(Animation ani){
 		setAnimation(ani, null);

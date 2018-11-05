@@ -4,7 +4,11 @@ public class MultiSoundSource {
 
 	SoundSource[] sources;
 	int index;
-	
+
+	public MultiSoundSource(int nSources, Sound sound) {
+		this(nSources);
+		loadSound(sound);
+	}
 	public MultiSoundSource(int nSources) {
 		sources = new SoundSource[nSources];
 		for(int i = 0; i < sources.length; i++) {
@@ -19,7 +23,7 @@ public class MultiSoundSource {
 	}
 	
 	public void play() {
-		if(!sources[index].hasFinished()) {
+		if(sources[index].isPlaying()) {
 			index = (index+1)%sources.length;
 		}
 		sources[index].play();
