@@ -6,7 +6,7 @@ import java.util.List;
 public class Time {
 
 	public static List<Event> timers = new ArrayList<>();
-	public static long[] time = new long[10];
+	public static long[] time = new long[100];
 	public static double[] delta = new double[time.length];
 	
 	public static double update(int i){
@@ -27,6 +27,10 @@ public class Time {
 		}
 		
 		return delta[i];
+	}
+	
+	public static double peakDelta(int i) {
+		return (System.nanoTime() - time[i])/1000000000.0;
 	}
 	
 	public static void schedule(double time, Runnable action){
