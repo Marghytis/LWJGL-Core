@@ -20,6 +20,20 @@ public class Core implements Runnable {
 	private Game game;
 //	private 
 
+	public Core(Window window, Speaker speaker, int fps) {
+		gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
+		this.window = window;
+		this.speaker = speaker;
+		if(this instanceof Game)
+			this.game = (Game)this;
+		else
+			throw new RuntimeException("Only call this constructor if this core is an instance of Game!");
+		this.fps = fps;
+		this.frameTime = 1.0/fps;
+		this.SIZE_HALF = window.SIZE_HALF;
+		this.SIZE = window.SIZE;
+	}
+	
 	public Core(Window window, Speaker speaker, Game game, int fps) {
 		gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
 		this.window = window;
@@ -58,7 +72,7 @@ public class Core implements Runnable {
 	private void init(){
 		window.init();
 		speaker.init();
-		game.init();
+		game.initGame();
 		window.show();
 	}
 	
